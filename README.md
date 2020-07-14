@@ -10,7 +10,8 @@
 
 ## Ideas 
 
-### Primary Idea:   Initially, our thought was to create an android application thats
+### Primary Idea:  
+                   Initially, our thought was to create an android application thats
                   primary purpose was to scan users financial records (Mostly in the
                   form of receipts and other 'receipt-like' documents) via the optical 
                   camera installed on the users smart phone, to analyze and extract the
@@ -37,7 +38,8 @@
 
 
 
-### Secondary Idea:  Our secondary idea revolved around creating a social media application where users would be able to react in real-time to important
+### Secondary Idea: 
+                     Our secondary idea revolved around creating a social media application where users would be able to react in real-time to important
                     societial and political events. What would make our platform unique to say twitter or reddit, is that we would be providing a strict
                     setting where we post the current news (collected from both sides of the political spectrum) and allow people to react and debate on
                     this important issues.
