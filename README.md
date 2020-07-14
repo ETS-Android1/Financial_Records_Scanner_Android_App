@@ -6,7 +6,7 @@
 | --------------------- | -------------------------- | ------------------------------ | --------------- | ------------------------------ |
 | Parsa Jalilifar       | pjalilifar@myseneca.ca     | parsajalilifar@gmail.com       | Parsa-jalilifar | parsajalilifar@gmail.com       |
 | Shervin Tafreshipour  | stafreshipour@myseneca.ca  | shervintafreshipour@gmail.com  | shervintafreshi | shervintafreshipour@gmail.com  |
-|                       |                            |                                |                 |                                |
+| Cristian Maierean     | cmaierean@myseneca.ca      | bazernwow@gmail.com            | CristianMaierean| bazernwow@gmail.com            |
 
 ## Ideas 
 
@@ -35,6 +35,18 @@
                              
                               3. Python(Flask, Pytesseract, opencv, caffe2) - Flask will be used for the developing the underlying image proccessing microservice, 
                                  while Pytesseract is being utilized because of its accurate data extraction ability from both computer generated and natural photos.
+                              
+                  The Problem:
+                  Small businesses require a lot of receipts throughout the course of the year. Usually, someone has to go through every receipt, record the date, location, amount, HST, etc, and put it into an accounting category. This generally takes a lot of time and will in turn cost businesses more money.
+                  
+                  Our App: 
+                  Use your Android device to take a picture of the receipt. Our app will use in house A.I Technology to recognize certain tokens such as date, location, amount, etc. Once tokens are found, user checks, edits, and selects a category. App places receipt into the correct category of the CSV file. All CSV files will be stored on our database and we can charge monthly. 
+                  At the end of the year, your accountant has to go through this large CSV file with all the categories and simply call functions like =SUM(), =AVERAGE(), =COUNT()... 
+                  All photos of the Raw receipt will be stored on our database and will be in the same folder/linked together with the CSV file line. Each line in the CSV file will contain an id that will be linked to its corresponding photo. Photos will be kept for evidence in case the physical receipt is lost or damaged. 
+                  We will have all of the functions that a normal CSV file has.
+                  
+ 
+
 
 
 
