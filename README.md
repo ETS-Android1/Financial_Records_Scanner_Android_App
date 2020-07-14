@@ -37,6 +37,7 @@
                                  while Pytesseract is being utilized because of its accurate data extraction ability from both computer generated and natural photos.
                               
                   The Problem:
+                  
                   Small businesses require a lot of receipts throughout the course of the year. Usually, someone has to go through every receipt, record the date, location, amount, HST, etc, and put it into an accounting category. This generally takes a lot of time and will in turn cost businesses more money.
                   
                   Our App: 
