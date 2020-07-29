@@ -65,3 +65,4 @@ CSV file:
 - We have to look into finding an open source excel type software that we can easily integrate into our app.
 - Our csv file should be able to also perform calculations like excel can.
 
+![image](https://user-images.githubusercontent.com/65363069/88753042-4766b880-d129-11ea-8e1d-f16277bbb055.png)
