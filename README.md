@@ -8,7 +8,7 @@
 | Shervin Tafreshipour | stafreshipour@myseneca.ca | shervintafreshipour@gmail.com | shervintafreshi  | shervintafreshipour@gmail.com |
 | Cristian Maierean    | cmaierean@myseneca.ca     | bazernwow@gmail.com           | CristianMaierean | bazernwow@gmail.com           |
 
-## Ideas
+
 
 ### Project Description:
 
