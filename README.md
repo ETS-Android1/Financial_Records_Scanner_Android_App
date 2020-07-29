@@ -12,9 +12,9 @@
 
 ### Project Description:
 
-Initially, our thought was to create an android application thats primary purpose was to scan users financial records (Mostly in the form of receipts and other 'receipt-like' documents) via the optical camera installed on the users smart phone, to analyze and extract the key pieces of monetary information. Once the financial details have been systematically extracted from the document, they will be stored in along with other documents the user has already scanned.Finally, when a user wishes to produce some sort of expenses spreadsheet detailing both calculated fields and the aggregated data retrieved from previous images.
+WE will design an Android application which primary purpose is to scan users financial records (Mostly in the form of receipts and other 'receipt-like' documents) via the optical camera installed on the users smart phone, to analyze and extract the key pieces of monetary information. Once the financial details have been systematically extracted from the document, they will be stored in along with other documents the user has already scanned. Finally, users can create spreadsheets of recepits from different categories, from different times ranges, etc.
 
-Secondly, to facilitate the first functional requirement of the app, we decided to create a user-login system for our app. The users profiles would contain previously uploaded images, aggregated expenses spreadsheets and most likely some other financial data/trends we were able to extract from the user's uploaded images.
+To facilitate the first functional requirement of the app, there will be a user-login system for our app. The users profiles would contain previously uploaded images, aggregated expenses spreadsheets and most likely some other financial data/trends we were able to extract from the user's uploaded images.
 
 Frameworks:
 
