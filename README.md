@@ -67,7 +67,4 @@ CSV file:
 
 ![image](https://user-images.githubusercontent.com/65363069/88753533-674aac00-d12a-11ea-93dc-10c0ad54876b.png)
 
-Database Structure:
-
-![Annotation 2020-07-28 235702](https://user-images.githubusercontent.com/65363069/88755033-31a7c200-d12e-11ea-86af-1ba64f4e5a1f.png)
 
