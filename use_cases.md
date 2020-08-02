@@ -9,6 +9,7 @@ Business owner who has a valid account in the system.
 ### Pre-Condition
 
 Each user must be logged in into the system to get access to the content of the mobile app.
+
 To login into the app by using email address and password, the user must have been registered in side of register page.
 
 ### Main Flow
