@@ -46,18 +46,6 @@ Photo's/Receipt Page:
 - All photos should be linked in the database to the right documentation in the csv file.
 - User can create folder to store the images in and organize them better.
 
-Upload/Take Photos:
-
-- When the user clicks this, it should take them directly to the camera section where they can scan and take the photo.
-- Once the photo is taken, the user has the choice of proceeding or retaking the photo
-- If the image is good, the user can either chose to autofill the info through our automated system or they can manually enter the information into the system.
-- Our database should automatically generate an id for every photo and link it to the information entered.
-- If the user choses the autofill option, our ai will try its best to scan the name of the store, date of purchase, total amount, and hst spent.
-- If the user wishes to add other information they can manually enter it in.
-- If our autofill option cannot find a token it will alert the user and ask them to enter the information in manually.
-- Once autofill is complete it will confirm all of the information with the user and give the user a choice of either fixing(manually entering) or saving it.
-- Once the user chooses to save the image/info, they will be presented with a new scene showing all of their categories in the csv file. They will chose which category to save it in
-
 CSV file:
 
 - When the user clicks this, it will take them to their main csv file. (I will show you my actual csv file for reference)
