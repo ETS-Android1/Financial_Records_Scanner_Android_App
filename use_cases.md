@@ -71,3 +71,40 @@ The user must be logged into their account, and have several images previously u
 
 The user will be able to generate and upload more financials documents as they see fit.
 
+
+### Adding Recipt Into CSV file (Done by Cristian Maierean)
+
+*** 
+
+### Actor (User)
+
+Business owner who has a valid account in the system.
+
+### Pre-Condition
+
+The user must be already logged into the system and have already scanned their document.
+
+### Main Flow
+
+1. User Verifys that all of the information entered is correct. 
+2. System sends a final check/verification to the user.
+3. System presents to the user all of their categorties as buttons that they can choose from. 
+4. User Selection (Cannot proceed further without this step)
+5. System sends a check/verification. 
+6. System saves user's document into csv file under the appropriate expense category
+
+
+### Alternative Flow
+
+1. If user detects an error or our system chose the wrong input, the user can manually overide.
+2. If user declines verification, take back to the manual overide section.
+3. If user escapes or closes the app during Category selection, check if user has a "Draft" Category. "If not, create it and save data into it".
+4. If user declines verification, ask them to reselect a category
+
+
+
+### Post Condition
+
+The user can add as many expense categories as they wish. 
+
+
