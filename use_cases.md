@@ -12,19 +12,22 @@ Each user must be logged in into the system to get access to the content of the 
 
 To login into the app by using email address and password, the user must have been registered in side of register page.
 
+Converting to CSV files can be done when the user had uploaded the pictures to the database.
+
 ### Main Flow
 
 1. User can choose among three login and one register options in login page .(Email And Password ,Google ,Face Book ,Account Register)
 2. After finishing login, the user will be brought to home page and a list of financial records pictures will be shown to the user.
-3) User can add to the financial record pictures by using plus sign button.
-4) User can see all financial record pictures and the converted picture to CSV files by click on all images or CSV files button in home page.
+3) User can add to the financial record pictures by using plus sign button then inside of new window can determine informations like category
+   of record.
+4) User can see all financial record pictures and the converted picture to CSV files by click on all images or CSV files buttons in home page.
 5) All picture can be deleted, shared and converted to the CSV file.
 6) All CSV files can be shared or removed from database.
 7) Side bar menu which is located in navbar and is accessible in all Activities can give user access to sign out, about page, home page, to profile 
    page and to enter record page.
 8) About page gives information about the project and people who had worked together to make it.
 9) Profile page show information of user who had logged in into the system.
-10) Type record page helps to the user to make CSV file when the software is not able to extract information form picture to make the CSV file.
+10) Record page helps to the user to make CSV file when the software is not able to extract information form picture to make the CSV file.
 
 ### Alternative Flow
 
@@ -33,8 +36,7 @@ To login into the app by using email address and password, the user must have be
 
 
 ### Post Condition
-
-When the user upload the image of financial record to the database he will be able to convert it to the CSV.
+The user can upload more record to database if he wants to do.
 
 
 ### User's Request a Financial Document based on previously taken photos (Done By Shervin Tafreshipour)
