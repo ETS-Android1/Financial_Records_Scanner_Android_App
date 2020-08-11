@@ -35,3 +35,37 @@ To login into the app by using email address and password, the user must have be
 ### Post Condition
 
 When the user upload the image of financial record to the database he will be able to convert it to the CSV.
+
+
+### User's Request a Financial Document based on previously taken photos (Done By Shervin Tafreshipour)
+
+*** 
+
+### Actor (User)
+
+An Applicaton user who has a valid account in the system.
+
+### Pre-Condition
+
+The user must be logged into their account, and have several images previously uploaded and scanned.
+
+### Main Flow
+
+1. User navigates to the 'Render Financial documents' section of the app.
+   The app displays a menu allowing the user to render a document by category, financial period, and type of document. 
+2. The user then selects the relevant options relating to the financial documents they are requesting.
+   The system then responds by asking if they would like to save the document locally or to a cloud storage service such as Google drive.
+3. Finally the user will select their preferred storage location.
+   Application will notify the user that the download is in progress/when the download has finished. 
+   
+### Alternative Flow
+
+1. The user selects to render a document by category which has no financial records attributed to it.
+   System will respond by letting the user know that the specific option is unavailable.
+2. User selects to render a document by financial period which no financial records exists pertaining that specific period.
+   The application will again respond by letthing the user know that the specific option is unavailable.
+
+### Post Condition
+
+The user will be able to generate and upload more financials documents as they see fit.
+
