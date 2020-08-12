@@ -1,4 +1,4 @@
-### Scanning User's Financial Records Via The Optical Camera Of Smart Phone (done by Parsa Jalilifar)
+### Adding a CSV file according previously taken picture (done by Parsa Jalilifar)
 
 *** 
 
@@ -8,35 +8,25 @@ Business owner who has a valid account in the system.
 
 ### Pre-Condition
 
-Each user must be logged in into the system to get access to the content of the mobile app.
-
-To login into the app by using email address and password, the user must have been registered in side of register page.
-
-Converting to CSV files can be done when the user had uploaded the pictures to the database.
+Each user must be logged in into the system to get access to the content of the mobile app and must have some scanned and uploaded pictures.
 
 ### Main Flow
-
-1. User can choose among three login and one register options in login page .(Email And Password ,Google ,Face Book ,Account Register)
-2. After finishing login, the user will be brought to home page and a list of financial records pictures will be shown to the user.
-3) User can add to the financial record pictures by using plus sign button then inside of new window can determine informations like category
-   of record.
-4) User can see all financial record pictures and the converted picture to CSV files by click on all images or CSV files buttons in home page.
-5) All picture can be deleted, shared and converted to the CSV file.
-6) All CSV files can be shared or removed from database.
-7) Side bar menu which is located in navbar and is accessible in all Activities can give user access to sign out, about page, home page, to profile 
-   page and to enter record page.
-8) About page gives information about the project and people who had worked together to make it.
-9) Profile page show information of user who had logged in into the system.
-10) Record page helps to the user to make CSV file when the software is not able to extract information form picture to make the CSV file.
+ 
+1.	User navigates to entering financial page of the app.
+2.	The mobile app shows options to user to render financial record by
+Information just like category etc.
+3.	When user try to save document, system informs user if he did not answer to Required options.
+4.	Finally, user upload the file and the waiting time will be shown as a Progress bar.
 
 ### Alternative Flow
 
-1. If the chosen picture is not suitable to convert to the CSV file the system must inform the user and suggest to the user to manually to enter
-   the information to be converted to the CSV file.(Step 10)
+1.	The user selects to render a document which has no records to it and
+The app will inform user about it.
 
 
 ### Post Condition
 The user can upload more record to database if he wants to do.
+
 
 
 ### User's Request a Financial Document based on previously taken photos (Done By Shervin Tafreshipour)
