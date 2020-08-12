@@ -1,4 +1,4 @@
-### Sharing an financial record or image  (done by Parsa Jalilifar)
+### Sharing A Financial Record or Image  (done by Parsa Jalilifar)
 
 *** 
 
