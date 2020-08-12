@@ -1,4 +1,4 @@
-### Adding a CSV file according previously taken picture (done by Parsa Jalilifar)
+### Sharing an financial record or image  (done by Parsa Jalilifar)
 
 *** 
 
@@ -12,20 +12,19 @@ Each user must be logged in into the system to get access to the content of the 
 
 ### Main Flow
  
-1.	User navigates to entering financial page of the app.
-2.	The mobile app shows options to user to render financial record by
-Information just like category etc.
-3.	When user try to save document, system informs user if he did not answer to Required options.
-4.	Finally, user upload the file and the waiting time will be shown as a Progress bar.
+1.	After successfull login, the user is able to navigate between images and CSV records.
+2.	The user select an specific images or record to share.
+3. The user decide how to share it through email, social media and etc.
+4. The result of action will be informed to the user.
 
 ### Alternative Flow
 
-1.	The user selects to render a document which has no records to it and
-The app will inform user about it.
+1.	if the internet connection is not available to share the image or CSV file the system asks the user to check connection of
+his phone again or try later.
 
 
 ### Post Condition
-The user can upload more record to database if he wants to do.
+The user can share more picture as he fits.
 
 
 
