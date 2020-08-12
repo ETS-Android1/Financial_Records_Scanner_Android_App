@@ -24,7 +24,7 @@ connection of his phone again or try later.
 
 
 ### Post Condition
-The users can share more records or pictures as they see fit.
+The recipient has received the image or CSV file.
 
 
 
