@@ -14,17 +14,17 @@ Each user must be logged in into the system to get access to the content of the 
  
 1.	After successfull login, the user is able to navigate between images and CSV records.
 2.	The user select an specific images or record to share.
-3. The user decide how to share it through email, social media and etc.
-4. The result of action will be informed to the user.
+3. The user decide how to share it by using email, social media and etc.
+4. The result of share action either being success or fail will be reported to the user.
 
 ### Alternative Flow
 
-1.	if the internet connection is not available to share the image or CSV file the system asks the user to check connection of
-his phone again or try later.
+1.	If the internet connection is not available to share the image or CSV file the system asks the user to check 
+connection of his phone again or try later.
 
 
 ### Post Condition
-The user can share more picture as he fits.
+The users can share more records or pictures as they see fit.
 
 
 
