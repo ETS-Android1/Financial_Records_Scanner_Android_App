@@ -12,7 +12,7 @@ Each user must be logged in into the system to get access to the content of the 
 
 ### Main Flow
  
-1.	After successfull login, the user is able to navigate between images and CSV records.
+1.	After successfully login, the user is able to navigate between images and CSV records.
 2.	The user select an specific images or record to share.
 3. The user decide how to share it by using email, social media and etc.
 4. The result of share action either being success or fail will be reported to the user.
