@@ -9,7 +9,7 @@ financial documents.
 The app is using Firebase Authentication for login part of app and Firebase database to store some information for instance 
 image url, file url, user information,etc in addition of Firebase storage to save actual image and file. to make the app able to use login options
 like google and face book be side email and password options registration form developers.facebook.com also developers.google.com had be done. 
-In other to get images from user image libraries of picasso and Android Image Cropper had used.
+In other to get images from user and show them in recyclerview image libraries of Android Image Cropper and picasso had used.
 
 ## Front-End
 
