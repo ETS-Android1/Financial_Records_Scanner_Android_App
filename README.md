@@ -8,7 +8,9 @@
 | Shervin Tafreshipour | stafreshipour@myseneca.ca | shervintafreshipour@gmail.com | shervintafreshi  | shervintafreshipour@gmail.com |
 
 
-
+### The Problem:  
+Small businesses require a lot of receipts throughout the course of the year. Usually, someone has to go through every receipt, record the date, location, amount, HST, etc, and put it into an accounting category. This generally takes a lot of time and will in turn cost businesses more money.
+ 
 ### Project Description:
 
 We will design an Android application which primary purpose is to scan users financial records (Mostly in the form of receipts and other 'receipt-like' documents) via the optical camera installed on the users smart phone, to analyze and extract the key pieces of monetary information. Once the financial details have been systematically extracted from the document, they will be stored in along with other documents the user has already scanned. Finally, users can create spreadsheets of recepits from different categories, from different times ranges, etc.
@@ -21,8 +23,6 @@ Frameworks:
 2. Java(mostly Android and AndroidX libraries) - Java itself is great for android app design so we decided to use it to create the interface of our application.
 3. Python(Flask, Pytesseract, opencv, caffe2) - Flask will be used for the developing the underlying image processing micro service, while Pytesseract is being utilized because of its accurate data extraction ability from both computer generated and natural photos.
 
-The Problem:  
- Small businesses require a lot of receipts throughout the course of the year. Usually, someone has to go through every receipt, record the date, location, amount, HST, etc, and put it into an accounting category. This generally takes a lot of time and will in turn cost businesses more money.
 
 Our App:
 Use your Android device to take a picture of the receipt. Our app will use in house A.I Technology to recognize certain tokens such as date, location, amount, etc. Once tokens are found, user checks, edits, and selects a category. App places receipt into the correct category of the CSV file. All CSV files will be stored on our database and we can charge monthly.
@@ -31,23 +31,3 @@ At the end of the year, your accountant has to go through this large CSV file wi
 
 All photos of the Raw receipt will be stored on our database and will be in the same folder/linked together with the CSV file line. Each line in the CSV file will contain an id that will be linked to its corresponding photo. Photos will be kept for evidence in case the physical receipt is lost or damaged. We will have all of the functions that a normal CSV file has.
 Receipt Building App
-
-HomePage:
-
-- Will have main part displaying user info and other important information
-- Button on the Left: Allows the Users to go through their photo's/receipt images. Inside of this there will be more functionality
-- Middle Button: Allows user to upload/take photos. In this option, the user will be allowed to autofill info or manually enter it in.
-- Button on the Right: Allows user to go to their csv main file and within this option there will be lots of functionality.
-
-Photo's/Receipt Page:
-
-- Should have a way of filtering/sorting all of these photos. By i.d, date of upload, date of purchase.
-- All photos should be linked in the database to the right documentation in the csv file.
-- User can create folder to store the images in and organize them better.
-
-CSV file:
-
-- When the user clicks this, it will take them to their main csv file. (I will show you my actual csv file for reference)
-- The user can easily go through each category and add info, delete info, replace info.
-- We have to look into finding an open source excel type software that we can easily integrate into our app.
-- Our csv file should be able to also perform calculations like excel can.
