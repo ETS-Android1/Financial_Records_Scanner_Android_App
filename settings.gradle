@@ -1,0 +1,2 @@
+rootProject.name='BTR490 Project'
+include ':app'

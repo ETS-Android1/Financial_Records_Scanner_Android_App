@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "313121660147",
+    "firebase_url": "https://btr490-project.firebaseio.com",
+    "project_id": "btr490-project",
+    "storage_bucket": "btr490-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:313121660147:android:92cb47b266f3d3a2beab86",
+        "android_client_info": {
+          "package_name": "com.example.btr490project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "313121660147-jrbcrd2c68spk8r7fmphq8aruubdje7d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCk2IkTFm1TXaT-Lo3ISFZf1hj4nJLN72A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "313121660147-27i1s71g8b8bhvvnj4roqr83inpb4mvo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
