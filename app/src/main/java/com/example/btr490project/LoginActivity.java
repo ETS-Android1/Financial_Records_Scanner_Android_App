@@ -7,8 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.provider.SyncStateContract;
 import android.text.TextUtils;
 
 import android.util.Log;
@@ -198,6 +196,8 @@ public class LoginActivity extends AppCompatActivity {
                     userInfo.put("Email", FEmail);
                     userInfo.put("login_type", "FaceBook");
                     userInfo.put("profilePicUrl", "default");
+
+
                     FirebaseDatabase.getInstance().getReference().child("Users").child(user.getUid()).updateChildren(userInfo);
                     updateUI(user);
                 } else {
