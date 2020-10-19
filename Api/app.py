@@ -1,6 +1,6 @@
 
 import json
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_restful import Api, Resource, reqparse, abort 
 from flask_jwt import JWT, jwt_required, current_identity
 from manager import retrieve_USERS_PROTOCOL, start_FETCHING_PROTOCOL, start_aggregation_PROTOCOL, start_migration_PROTOCOL, task_report_PROTOCOL
@@ -10,7 +10,7 @@ app = Flask(__name__)
 api = Api(app)
 
 parser = reqparse.RequestParser()
-extractor = Extractor
+extractor = Extractor()
 users = []
 
 class User(object):
@@ -44,8 +44,7 @@ class Protected(Resource):
         return '%s' % current_identity
 
 class Analyze(Resource):
-                      
-    @jwt_required()
+
     def post(self):
 
         json_ID_LIST = []
@@ -60,14 +59,14 @@ class Analyze(Resource):
                  spreadsheet_ID_LIST.append(data_items['spreadsheet_ID'])
                  image_ID_LIST.append(data_items['image_ID'])
                   
-            start_fetching_PROTOCOL(json_ID_LIST, image_ID_LIST)
+            start_FETCHING_PROTOCOL(json_ID_LIST, image_ID_LIST)
             extractor.start_EXTRACTION()
             start_aggregation_PROTOCOL(extractor.get_resultant(), request_DATA)
             start_migration_PROTOCOL()
 
-            return jsonify(task_report_PROTOCOL(request_DATA)),200
+            return make_response(jsonify(task_report_PROTOCOL(request_DATA)),200)
+           
             
-
 api.add_resource(Protected, '/protect')
 api.add_resource(Analyze, '/process_images')
 

@@ -1,6 +1,8 @@
 
 import os
+import re
 import cv2
+import time
 import pytesseract
 import pandas as pd
 import numpy as np
@@ -91,7 +93,7 @@ class Extractor():
 
   def __init__(self):
        
-     Extractor.__data_DICT = []  
+     Extractor.__data_DICT = {}
      Extractor.__custom_config = r'--oem 3 -- psm 6 outputbase digits'
 
   def __is_number(n):
@@ -107,23 +109,21 @@ class Extractor():
   def start_EXTRACTION(self):
       # Multiprocessing
      img_ID_LIST = os.listdir(Extractor.__IMAGE_PATH)[:]
-     with concurrent.futures.ProcessPoolExector() as executor:
-        extracton_STATUS_LIST = executor.map(Extractor.__extraction_ROUTINE, img_ID_LIST)
+     Extractor.__extraction_ROUTINE(img_ID_LIST[0])
+     #with concurrent.futures.ThreadPoolExecutor() as executor:
+        #extracton_STATUS_LIST = executor.map(Extractor.__extraction_ROUTINE, img_ID_LIST)
      
   def __extraction_ROUTINE(img_ID):
-   
-    i = 0
+    i = 10
     while True:
-       Extractor.__OCR_ROUTINE_DEFAULT(img_path = __IMAGE_PATH + '/' + img_ID, scale_percent = 100 + i)
+       Extractor.__OCR_ROUTINE_DEFAULT(img_ID, 100 + i)
   
        if Extractor.__extract_DATA(img_ID) is not False: 
-            return Extractor.__extract_DATA(img_ID)
+            return None
        elif i < 20:
             i += 10
-       elif i >= 20 and i < 30:
-            i += 5
-       elif i == 30:
-            break
+       elif i == 20:
+            break  
     Extractor.__data_DICT[img_ID[:-4]] = None            
       
   def __extract_DATA(img_test_ID):
@@ -136,33 +136,29 @@ class Extractor():
      query_info_LC = []
      
      data_path = "./extraction_data/" + img_test_ID + "_RTD.txt"
+
      text_data = open(data_path, 'r')
-     data_list = text_data.readlines()  
+     data_lines = text_data.readlines()  
      
-     for line in data_list: 
+     for line in data_lines: 
+
         # Extract Receipt Cost
         match_Total = re.search(r'\bTotal\b', line) or re.search(r'\bTOTAL\b', line)
         if (match_Total != None):
-                        
             for word in line.split():
-                if word.startswith('$') and is_number(word[1:]): 
+                if word.startswith('$') and Extractor.__is_number(word[1:]): 
                    total_cost_LC = float(word[1:])
-                   break
-                elif is_number(word):
+                elif Extractor.__is_number(word):
                    total_cost_LC = float(word)   
-                   break 
 
         #Extract Tax Amount
         match_Tax = re.search(r'\bTax\b', line) or re.search(r'\bTAX\b', line)
         if (match_Tax != None):
-
             for word in line.split():
-                if (word.startswith('$') and is_number(word[1:])):
+                if word.startswith('$') and Extractor.__is_number(word[1:]):
                    tax_amount_LC = float(word[1:])
-                   break
-                elif is_number(word):
+                elif Extractor.__is_number(word):
                    tax_amount_LC = float(word)
-                   break
 
         #Extract Date of Purchase
         match_Date = re.search(r'\b(1[0-2]|0[1-9])-(3[01]|[12][0-9]|0[1-9])-[0-9]{4}\b', line)
@@ -170,38 +166,40 @@ class Extractor():
             for word in line.split():
                 if (re.match(r'\b(1[0-2]|0[1-9])-(3[01]|[12][0-9]|0[1-9])-[0-9]{4}\b', word)):
                    purchase_date_LC = word
-                   break
 
         #Extract Business Phone Number
         Match_Phone = re.search(r'\b\d{3}-\d{3}-\d{4}\b', line) or re.search(r'\b[(]\d{3}[)][ ]*\d{3}-\d{4}\b', line)
-        if (Match_Phone != None):           
+        if (Match_Phone != None):  
             for word in line.split():
                 if (re.match(r'\b\d{3}-\d{3}-\d{4}\b', word)):
-                   query_info_LC = query_INFO(word)[:]
-                   break
+                   query_info_LC = Extractor.__query_INFO(word)[:]
                 elif (re.match(r'\b[(]\d{3}[)][ ]*\d{3}-\d{4}\b', word)):
-                   query_info_LC = query_INFO(word)[:]
-                   break
-        
-        if total_cost_LC == None or tax_amount_LC == None or purchase_date_LC == None or len(query_INFO) == 0:
-            return False
-        else:
-            business_name_LC = query_info_LC[0]
-            category_LC = query_info_LC[1]
+                   query_info_LC = Extractor.__query_INFO(word)[:]
 
-            Extractor.__data_DICT[img_test_ID[:-4]] = [
-               purchase_date_LC, 
-               business_name_LC,
-               category_LC,
-               tax_amount_LC,
-               total_cost_LC,
+     if total_cost_LC == None or tax_amount_LC == None or len(query_info_LC) == 0:
+         return False
+     else:
+         if (purchase_date_LC == None):
+              purchase_date_LC = '00/00/0000'
+         
+         business_name_LC = query_info_LC[0]
+         category_LC = query_info_LC[1]
+
+         Extractor.__data_DICT[img_test_ID[:-4]] = [
+             purchase_date_LC, 
+             business_name_LC,
+             category_LC,
+             tax_amount_LC,
+             total_cost_LC,
             ]
-            return True
-   
+         return True     
+
   def __query_INFO(search_parameter):
     
      gmaps = client(key = Extractor.__API_KEY)
-     #Query google API by parameter_type  
+     #Query google API by parameter_type
+     query_DATA = []
+
      query_results = client.find_place(gmaps, ('+1' + search_parameter) , 'phonenumber', ['name', 'types'])        
      for item in query_results.items():
         query_DATA.append(item[1][0]['name'])
@@ -210,10 +208,10 @@ class Extractor():
 
   def __OCR_ROUTINE_DEFAULT(img_ID, scale_percent):    
 
-     TEST_IMG_PATH =  './test_images/' + img_ID  + '_TI.jpg'
+     TEST_IMG_PATH =  './test_images/' + img_ID[:-4] + "_TM.jpg"
          
      # Modify DPI 
-     receiptIMG = Image.open(img_ID)
+     receiptIMG = Image.open( './test_images/' + img_ID)
      receiptIMG.save(TEST_IMG_PATH, dpi = (300,300))
      img_modified = cv2.imread(TEST_IMG_PATH)
      os.remove(TEST_IMG_PATH)
@@ -234,16 +232,11 @@ class Extractor():
      deskewed = deskew(thresholded)
        
      # execute tesseract-OCR
-     data = pytesseract.image_to_string(deskewed, config=Extractor.custom_config)
+     data = pytesseract.image_to_string(deskewed, config=Extractor.__custom_config)
      data_file = open("./extraction_data/" + img_ID + "_RTD.txt", "w")
      n = data_file.write(data)
      data_file.close()
-   
-  def __OCR_ROUTINE_INVERSE(img_ID, scale_percent):
-       print('inverse routine called')
-
-  def __OCR_ROUTINE_BLUR(img_ID, scale_percent):
-       print('blur rountine called')        
+     
 
 
 
