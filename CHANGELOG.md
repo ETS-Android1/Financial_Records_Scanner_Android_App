@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2020-11-02
+### Added 
+- Image-Uploader feature. [#9](https://github.com/SenecaCollegeBTSProjects/Group_12/issues/9)
+
 ## [0.4.0] - 2020-10-19
 ### Added 
 - Finalizing API OCR functionality pipeline for Receipts. [#8](https://github.com/SenecaCollegeBTSProjects/Group_12/issues/8)
 
-## [0.3.0] - 2020-10-5
+## [0.3.0] - 2020-10-05
 ### Added 
 - Making the basic app look. [#7](https://github.com/SenecaCollegeBTSProjects/Group_12/issues/7)
 
