@@ -196,8 +196,6 @@ public class LoginActivity extends AppCompatActivity {
                     userInfo.put("Email", FEmail);
                     userInfo.put("login_type", "FaceBook");
                     userInfo.put("profilePicUrl", "default");
-
-
                     FirebaseDatabase.getInstance().getReference().child("Users").child(user.getUid()).updateChildren(userInfo);
                     updateUI(user);
                 } else {

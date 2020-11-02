@@ -21,7 +21,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.theartofdev.edmodo.cropper.CropImage;
 
@@ -72,7 +71,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.uploadButton:
-                Toast.makeText(getActivity(), "image uploader", Toast.LENGTH_SHORT).show();
+                CropImage.activity().start(getContext(), this);
                 break;
 
             case R.id.fileButton:
@@ -93,11 +92,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 setImageUri(result.getUri());
+                openDialog();
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
         }
     }
+
+    private void openDialog() {
+        ImageInfoDialog d = new ImageInfoDialog();
+        d.setImageUri(imageUri);
+        d.show(getFragmentManager(), "image dialog");
+    }
+    
 
     public void setImageUri(Uri imageUri) {
         this.imageUri = imageUri;
