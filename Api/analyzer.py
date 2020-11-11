@@ -143,17 +143,19 @@ class Extractor():
      for line in data_lines: 
 
         # Extract Receipt Cost
-        match_Total = re.search(r'\bTotal\b', line) or re.search(r'\bTOTAL\b', line)
-        if (match_Total != None):
+        match_Total = re.search(r'\bTotal\b', line) or re.search(r'\bTOTAL\b', line) or re.search(r'Sub w/Tax:', line)
+        if (match_Total != None and total_cost_LC == None and len(line.split()) > 1):                                                    
             for word in line.split():
+                if (line.split()[0] == 'Sub' and line.split()[1] == 'Total:'):
+                   break
                 if word.startswith('$') and Extractor.__is_number(word[1:]): 
                    total_cost_LC = float(word[1:])
                 elif Extractor.__is_number(word):
                    total_cost_LC = float(word)   
 
         #Extract Tax Amount
-        match_Tax = re.search(r'\bTax\b', line) or re.search(r'\bTAX\b', line)
-        if (match_Tax != None):
+        match_Tax = re.search(r'\bTax\b', line) or re.search(r'\bTAX\b', line) or re.search(r'Tax::', line)
+        if (match_Tax != None and tax_amount_LC == None and len(line.split()) > 1):                                                
             for word in line.split():
                 if word.startswith('$') and Extractor.__is_number(word[1:]):
                    tax_amount_LC = float(word[1:])
@@ -161,26 +163,33 @@ class Extractor():
                    tax_amount_LC = float(word)
 
         #Extract Date of Purchase
-        match_Date = re.search(r'\b(1[0-2]|0[1-9])-(3[01]|[12][0-9]|0[1-9])-[0-9]{4}\b', line)
-        if (match_Date != None):
+        match_Date = re.search(r'\b(1[0-2]|0[1-9])-(3[01]|[12][0-9]|0[1-9])-[0-9]{4}\b', line) or re.search(r'\b(1[0-2]|0[1-9])[/-](3[01]|[12][0-9]|0[1-9])[/-][0-9]{2}\b', line)
+        if (match_Date != None and purchase_date_LC == None):                                                               
             for word in line.split():
                 if (re.match(r'\b(1[0-2]|0[1-9])-(3[01]|[12][0-9]|0[1-9])-[0-9]{4}\b', word)):
                    purchase_date_LC = word
+            for word in line.split():  
+                if (re.match(r'\b(1[0-2]|0[1-9])[/-](3[01]|[12][0-9]|0[1-9])[/-][0-9]{2}\b', word)):
+                   purchase_date_LC = word        
 
         #Extract Business Phone Number
-        Match_Phone = re.search(r'\b\d{3}-\d{3}-\d{4}\b', line) or re.search(r'\b[(]\d{3}[)][ ]*\d{3}-\d{4}\b', line)
-        if (Match_Phone != None):  
+        Match_Phone = re.search(r'\b\d{3}-\d{3}-\d{4}\b', line) or re.search(r'[(]\d{3}[)][ ]\d{3}-\d{4}', line)
+        if (Match_Phone != None and query_info_LC == []):  
             for word in line.split():
                 if (re.match(r'\b\d{3}-\d{3}-\d{4}\b', word)):
                    query_info_LC = Extractor.__query_INFO(word)[:]
-                elif (re.match(r'\b[(]\d{3}[)][ ]*\d{3}-\d{4}\b', word)):
-                   query_info_LC = Extractor.__query_INFO(word)[:]
+            if (query_info_LC == []):
+                match_obj =  re.search(r'[(]\d{3}[)][ ]\d{3}[-]\d{4}', line)
+                phone_number = match_obj.group(0)   
+                query_info_LC = Extractor.__query_INFO(phone_number)[:]
 
      if total_cost_LC == None or tax_amount_LC == None or len(query_info_LC) == 0:
          return False
      else:
          if (purchase_date_LC == None):
               purchase_date_LC = '00/00/0000'
+         elif (len(purchase_date_LC) == 8):
+              purchase_date_LC = purchase_date_LC[:6] + '20' + purchase_date_LC[6:]      
          
          business_name_LC = query_info_LC[0]
          category_LC = query_info_LC[1]
