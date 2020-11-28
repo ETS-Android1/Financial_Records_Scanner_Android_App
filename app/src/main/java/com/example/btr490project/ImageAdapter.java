@@ -15,25 +15,36 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 import java.util.List;
+
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
 
     private Context mContext;
     private List<ImageUpload> mUploads;
 
-
     public ImageAdapter(Context context, List<ImageUpload> uploads) {
-
         mContext = context;
         mUploads = uploads;
-
     }
 
 
@@ -71,13 +82,27 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                             case R.id.image_delete:
                                 break;
                             case R.id.image_scan:
-                                Toast.makeText(mContext, uploadCurrent.getImageUrl(), Toast.LENGTH_SHORT).show();
+                                // breakdown image url
+                                final String imgURL = uploadCurrent.getImageUrl().substring(uploadCurrent.getImageUrl().indexOf('F') + 1, uploadCurrent.getImageUrl().indexOf('?'));
+                                // Create Json Body Requests
+                                JSONObject jsonBody = new JSONObject();
+                                JSONObject data = new JSONObject();
+
+                                try {
+                                    jsonBody.put("json_ID", "data_test.json");
+                                    jsonBody.put("spreadsheet_ID", "spreadsheet1");
+                                    jsonBody.put("image_ID", imgURL);
+                                    data.put("Image_Request_1", jsonBody);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                scanImageAPI(data);
                                 break;
+
                             case R.id.image_share:
                                 //handle menu3 click
                                 break;
                         }
-
 
                         return false;
                     }
@@ -87,6 +112,54 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
             }
         });
     }
+
+    private void scanImageAPI(final JSONObject requestBody) {
+        final RequestQueue queue = Volley.newRequestQueue(mContext);
+        final String url = "http://192.168.0.15:8080/process_images";
+        final String requestBodyString = requestBody.toString();
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                // Display the response string.
+                final String apiResponse = ("Response is: " + response);
+                Toast.makeText(mContext, apiResponse, Toast.LENGTH_LONG).show();
+
+            }
+
+            }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(mContext, "Request Connection Failed", Toast.LENGTH_LONG).show();
+            }
+
+        }) {
+
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+
+               try {
+                   return requestBodyString == null ? null : requestBodyString.getBytes("utf-8");
+               } catch(UnsupportedEncodingException uee){
+                   VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBodyString, "utf-8");
+                   return null;
+               }
+
+            }
+
+        };
+
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
 
     @Override
     public int getItemCount() {
