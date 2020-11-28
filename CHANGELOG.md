@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.0] - 2020-11-27
 ### Added 
-- Connecting Image Processing API to the Android Application [#12](https://github.com/SenecaCollegeBTSProjects/Group_12/issues/12)
+- Connecting Image Processing API to the Android Application.[#12](https://github.com/SenecaCollegeBTSProjects/Group_12/issues/12)
 
 ## [0.7.0] - 2020-11-23
 ### Added 
