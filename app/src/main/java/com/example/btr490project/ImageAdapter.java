@@ -23,10 +23,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -41,6 +45,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
     private Context mContext;
     private List<ImageUpload> mUploads;
+    private FirebaseStorage mStorage;
+    private DatabaseReference mDatabaseReference;
 
     public ImageAdapter(Context context, List<ImageUpload> uploads) {
         mContext = context;
@@ -63,6 +69,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         final ImageUpload uploadCurrent = mUploads.get(position);
         Picasso.get().load(uploadCurrent.getImageUrl()).placeholder(R.drawable.ic_image_black_24dp).fit().centerCrop().into(holder.imageView);
 
+        mStorage = FirebaseStorage.getInstance();
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Images");
+
         holder.buttonViewOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,10 +89,22 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
                         switch (item.getItemId()) {
                             case R.id.image_delete:
+                                StorageReference imageRef = mStorage.getReferenceFromUrl(uploadCurrent.getImageUrl());
+                                imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        // if we removed the item from storage we remove it from database too.
+                                        mDatabaseReference.child(uploadCurrent.getImageKey()).removeValue();
+                                        Toast.makeText(mContext, "Image Deleted", Toast.LENGTH_SHORT).show();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(mContext, "Delectation failed", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                                 break;
                             case R.id.image_scan:
-                                // breakdown image url
-                                final String imgURL = uploadCurrent.getImageUrl().substring(uploadCurrent.getImageUrl().indexOf('F') + 1, uploadCurrent.getImageUrl().indexOf('?'));
                                 // Create Json Body Requests
                                 JSONObject jsonBody = new JSONObject();
                                 JSONObject data = new JSONObject();
@@ -91,7 +112,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                                 try {
                                     jsonBody.put("json_ID", "data_test.json");
                                     jsonBody.put("spreadsheet_ID", "spreadsheet1");
-                                    jsonBody.put("image_ID", imgURL);
+                                    jsonBody.put("image_ID", uploadCurrent.getImageName());
                                     data.put("Image_Request_1", jsonBody);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -119,8 +140,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         final String requestBodyString = requestBody.toString();
 
         // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 // Display the response string.
@@ -129,7 +149,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
             }
 
-            }, new Response.ErrorListener() {
+        }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(mContext, "Request Connection Failed", Toast.LENGTH_LONG).show();
@@ -145,12 +165,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
             @Override
             public byte[] getBody() throws AuthFailureError {
 
-               try {
-                   return requestBodyString == null ? null : requestBodyString.getBytes("utf-8");
-               } catch(UnsupportedEncodingException uee){
-                   VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBodyString, "utf-8");
-                   return null;
-               }
+                try {
+                    return requestBodyString == null ? null : requestBodyString.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBodyString, "utf-8");
+                    return null;
+                }
 
             }
 

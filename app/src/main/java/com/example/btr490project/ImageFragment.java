@@ -47,7 +47,6 @@ public class ImageFragment extends Fragment {
     }
 
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -59,6 +58,7 @@ public class ImageFragment extends Fragment {
 
         mUploads = new ArrayList<>();
 
+
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Images");
 
         mDatabaseReference.addValueEventListener(new ValueEventListener() {
@@ -69,6 +69,9 @@ public class ImageFragment extends Fragment {
 
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     ImageUpload upload = postSnapshot.getValue(ImageUpload.class);
+
+                    // setting images ids when we getting them from fire base
+                    upload.setImageKey(postSnapshot.getKey());
                     mUploads.add(upload);
                 }
 
