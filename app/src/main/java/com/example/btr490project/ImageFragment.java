@@ -69,9 +69,10 @@ public class ImageFragment extends Fragment {
 
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     ImageUpload upload = postSnapshot.getValue(ImageUpload.class);
-
                     // setting images ids when we getting them from fire base
                     upload.setImageKey(postSnapshot.getKey());
+                    // setting images name by using image url
+                    upload.setImageNameFromUrl(upload.getImageUrl());
                     mUploads.add(upload);
                 }
 

@@ -1,6 +1,11 @@
 package com.example.btr490project;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.StrictMode;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
@@ -37,8 +43,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
@@ -121,7 +134,36 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                                 break;
 
                             case R.id.image_share:
-                                //handle menu3 click
+
+                                int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                                if (SDK_INT > 8) {
+                                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                                    StrictMode.setThreadPolicy(policy);
+
+                                    try {
+
+                                        URL url = new URL(uploadCurrent.getImageUrl());
+                                        Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
+                                        File file = new File(mContext.getExternalCacheDir(), File.separator + uploadCurrent.getImageName());
+                                        FileOutputStream fOut = new FileOutputStream(file);
+                                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+                                        fOut.flush();
+                                        fOut.close();
+                                        file.setReadable(true, false);
+
+                                        final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        Uri photoURI = FileProvider.getUriForFile(mContext, BuildConfig.APPLICATION_ID + ".provider", file);
+                                        intent.putExtra(Intent.EXTRA_STREAM, photoURI);
+                                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                        intent.setType("image/*"); // set type of the image
+                                        mContext.startActivity(Intent.createChooser(intent, "Share image via")); // title of share window
+
+                                    } catch (IOException e) {
+                                        System.out.println(e);
+                                    }
+                                }
                                 break;
                         }
 
@@ -133,6 +175,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
             }
         });
     }
+
 
     private void scanImageAPI(final JSONObject requestBody) {
         final RequestQueue queue = Volley.newRequestQueue(mContext);

@@ -15,7 +15,6 @@ public class ImageUpload {
     public ImageUpload(String imageUrl, String imageCategory) {
         setImageUrl(imageUrl);
         setImageCategory(imageCategory);
-        setImageName(imageUrl.substring(imageUrl.indexOf('F') + 1, imageUrl.indexOf('?')));
     }
 
     public String getImageUrl() {
@@ -57,5 +56,9 @@ public class ImageUpload {
         this.imageName = imageName;
     }
 
+    @Exclude
+    public void setImageNameFromUrl(String imageUrl) {
+        setImageName(imageUrl.substring(imageUrl.indexOf('F') + 1, imageUrl.indexOf('?')));
+    }
 
 }

@@ -125,8 +125,9 @@ public class ImageInfoDialog extends AppCompatDialogFragment {
             final MimeTypeMap mime = MimeTypeMap.getSingleton();
             extension = mime.getExtensionFromMimeType(getActivity().getContentResolver().getType(uri));
         } else {
-            //If scheme is a File
-            //This will replace white spaces with %20 and also other special characters. This will avoid returning null values on file name with spaces and special characters.
+            // If scheme is a File
+            // This will replace white spaces with %20 and also other special characters.
+            // This will avoid returning null values on file name with spaces and special characters.
             extension = MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(new File(uri.getPath())).toString());
 
         }
