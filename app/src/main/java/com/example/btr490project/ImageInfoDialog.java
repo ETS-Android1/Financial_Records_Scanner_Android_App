@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,11 +35,11 @@ import java.io.File;
 
 public class ImageInfoDialog extends AppCompatDialogFragment {
 
-    private EditText imageType;
     private String imageCategory;
     private Uri imageUri;
     private String imageUrl;
     private Context mContext;
+    private Spinner imageSpinner;
 
     @NonNull
     @Override
@@ -55,12 +57,16 @@ public class ImageInfoDialog extends AppCompatDialogFragment {
         }).setPositiveButton("ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                imageCategory = imageType.getText().toString().toLowerCase();
+                imageCategory = imageSpinner.getSelectedItem().toString();
                 UploadImage();
             }
         });
 
-        imageType = view.findViewById(R.id.imgCat);
+        // drop down for selecting image category
+        imageSpinner = view.findViewById(R.id.spinner_imgCategory);
+        ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(mContext, R.array.imgCategories, android.R.layout.simple_spinner_item);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        imageSpinner.setAdapter(arrayAdapter);
 
         return builder.create();
     }

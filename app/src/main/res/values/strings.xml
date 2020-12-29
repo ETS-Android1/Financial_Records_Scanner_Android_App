@@ -5,6 +5,11 @@
     <string name="navigation_drawer_open">Open navigation</string>
     <string name="naviagtion_drawer_close">Close navigation</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="imgCategories">
+        <item>None</item>
+        <item>bar</item>
+        <item>restaurant</item>
+        <item>pizzeria</item>
+    </string-array>
+
 </resources>
