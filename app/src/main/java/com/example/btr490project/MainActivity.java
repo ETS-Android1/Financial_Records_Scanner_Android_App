@@ -74,8 +74,8 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.nav_home:
                         fragment = new HomeFragment();
                         break;
-                    case R.id.nav_CSV_adder:
-                        fragment = new CsvAdderFragment();
+                    case R.id.nav_file_adder:
+                        fragment = new FileInfoAdderFragment();
                         break;
                     case R.id.nav_profile:
                         fragment = new ProfileFragment();

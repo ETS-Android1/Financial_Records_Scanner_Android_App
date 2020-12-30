@@ -8,9 +8,9 @@
             android:icon="@drawable/home_icon"
             android:title="Home" />
         <item
-            android:id="@+id/nav_CSV_adder"
+            android:id="@+id/nav_file_adder"
             android:icon="@drawable/adder"
-            android:title="CSV File Adder" />
+            android:title="File Adder" />
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/profile_icon"

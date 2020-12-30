@@ -5,7 +5,7 @@
     <string name="navigation_drawer_open">Open navigation</string>
     <string name="naviagtion_drawer_close">Close navigation</string>
 
-    <string-array name="imgCategories">
+    <string-array name="categories">
         <item>None</item>
         <item>bar</item>
         <item>restaurant</item>

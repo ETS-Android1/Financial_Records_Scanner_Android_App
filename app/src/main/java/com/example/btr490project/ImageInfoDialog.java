@@ -64,7 +64,7 @@ public class ImageInfoDialog extends AppCompatDialogFragment {
 
         // drop down for selecting image category
         imageSpinner = view.findViewById(R.id.spinner_imgCategory);
-        ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(mContext, R.array.imgCategories, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(mContext, R.array.categories, android.R.layout.simple_spinner_item);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         imageSpinner.setAdapter(arrayAdapter);
 
