@@ -110,6 +110,9 @@ public class FileInfoAdderFragment extends Fragment {
                     String fileId = ref.push().getKey();
                     // adding image info to file id
                     ref.child(fileId).setValue(fileInfo);
+
+                    Toast.makeText(getActivity(), "File Information Uploaded", Toast.LENGTH_SHORT)
+                            .show();
                 }
             }
         });
