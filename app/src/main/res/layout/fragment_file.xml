@@ -7,17 +7,21 @@
     android:background="#ffffff"
     tools:context=".FileFragment">
 
-    <TextView
-        android:id="@+id/welcome"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="181dp"
-        android:layout_marginTop="288dp"
-        android:gravity="center"
-        android:text="File Page"
-        android:textSize="36sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.533"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/file_progress_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_file"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </RelativeLayout>
 
 </FrameLayout>
