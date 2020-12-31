@@ -1,11 +1,14 @@
 package com.example.btr490project;
 
+import com.google.firebase.database.Exclude;
+
 public class FileUpload {
 
     private String fileName;
     private String startDate;
     private String endDate;
     private String fileCategory;
+    private String fileKey;
 
     public FileUpload() {
 
@@ -48,6 +51,16 @@ public class FileUpload {
 
     public void setFileCategory(String fileCategory) {
         this.fileCategory = fileCategory;
+    }
+
+    @Exclude
+    public String getFileKey() {
+        return fileKey;
+    }
+
+    @Exclude
+    public void setFileKey(String fileKey) {
+        this.fileKey = fileKey;
     }
 
 }

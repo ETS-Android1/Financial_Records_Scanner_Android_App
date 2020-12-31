@@ -61,6 +61,8 @@ public class FileFragment extends Fragment {
 
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     FileUpload upload = postSnapshot.getValue(FileUpload.class);
+                    // setting file ids when we getting them from fire base
+                    upload.setFileKey(postSnapshot.getKey());
                     mUploads.add(upload);
                 }
 
