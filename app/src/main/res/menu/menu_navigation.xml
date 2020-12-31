@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/imgButton"
+        android:icon="@drawable/ic_image"
+        android:title="Images" />
+
+    <item
+        android:id="@+id/uploadButton"
+        android:icon="@drawable/ic_add_photo"
+        android:title="Img Adder" />
+
+    <item
+        android:id="@+id/fileUploadButton"
+        android:icon="@drawable/ic_add_file"
+        android:title="File Adder" />
+
+    <item
+        android:id="@+id/fileButton"
+        android:icon="@drawable/ic_file"
+        android:title="Docs" />
+
+</menu>

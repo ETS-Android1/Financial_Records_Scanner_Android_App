@@ -13,10 +13,10 @@
 
 
         <RelativeLayout
+            android:id="@+id/relativeLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="56dp"
-            app:layout_constraintBottom_toTopOf="@+id/uploadButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -32,33 +32,21 @@
 
         </RelativeLayout>
 
-        <Button
-            android:id="@+id/imgButton"
-            android:layout_width="0dp"
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/img_button"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/uploadButton"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/uploadButton"
-            android:layout_width="74dp"
-            android:layout_height="56dp"
-            android:background="@drawable/upload"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/fileButton"
-            app:layout_constraintStart_toEndOf="@+id/imgButton" />
-
-        <Button
-            android:id="@+id/fileButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/file_button"
+            android:layout_alignParentBottom="true"
+            app:labelVisibilityMode="labeled"
+            android:background="#263238"
+            app:itemIconTint="@drawable/selector"
+            app:itemTextColor="@drawable/selector"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/uploadButton" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
+            app:menu="@menu/menu_navigation" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

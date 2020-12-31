@@ -28,13 +28,9 @@
             android:id="@+id/fileName_input"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="16dp"
             android:ems="10"
             android:inputType="textPersonName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.093"
             app:layout_constraintStart_toEndOf="@+id/fileName_label"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -238,7 +234,7 @@
 
         <Spinner
             android:id="@+id/spinner_fileCategory"
-            android:layout_width="347dp"
+            android:layout_width="232dp"
             android:layout_height="31dp"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
@@ -247,19 +243,6 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageCategoryTitle" />
-
-        <Button
-            android:id="@+id/sendBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="127dp"
-            android:text="send"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.476"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinner_fileCategory"
-            app:layout_constraintVertical_bias="0.021" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
