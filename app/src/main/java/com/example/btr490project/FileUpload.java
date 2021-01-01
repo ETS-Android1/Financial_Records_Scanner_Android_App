@@ -10,6 +10,8 @@ public class FileUpload {
     private String fileCategory;
     private String fileUrl;
     private String fileKey;
+    private String fileStatus;
+
 
     public FileUpload() {
 
@@ -72,5 +74,16 @@ public class FileUpload {
     public void setFileKey(String fileKey) {
         this.fileKey = fileKey;
     }
+
+
+    public String getFileStatus() {
+        return fileStatus;
+    }
+
+
+    public void setFileStatus(String fileStatus) {
+        this.fileStatus = fileStatus;
+    }
+
 
 }

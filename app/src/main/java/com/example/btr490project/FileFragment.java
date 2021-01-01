@@ -63,12 +63,33 @@ public class FileFragment extends Fragment {
                     FileUpload upload = postSnapshot.getValue(FileUpload.class);
                     // setting file ids when we getting them from fire base
                     upload.setFileKey(postSnapshot.getKey());
+                    // setting file status
+                    upload.setFileStatus(" ");
+
                     mUploads.add(upload);
                 }
 
                 mAdapter = new FileAdapter(getActivity(), mUploads);
                 mRecyclerView.setAdapter(mAdapter);
                 mProgressBar.setVisibility(View.INVISIBLE);
+                mAdapter.setOnItemClickListener(new FileAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position) {
+
+                        if (mUploads.get(position).getFileStatus().equals(" ")) {
+                            changeItemStatus(position, "Selected");
+                        } else {
+                            changeItemStatus(position, " ");
+                        }
+
+                    }
+
+                });
+            }
+
+            public void changeItemStatus(int position, String text) {
+                mUploads.get(position).setFileStatus(text);
+                mAdapter.notifyItemChanged(position);
             }
 
             @Override

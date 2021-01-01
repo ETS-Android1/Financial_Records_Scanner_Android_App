@@ -38,6 +38,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     private List<FileUpload> mUploads;
     private FirebaseStorage mStorage;
     private DatabaseReference mDatabaseReference;
+    private OnItemClickListener mListener;
 
 
     public FileAdapter(Context context, List<FileUpload> uploads) {
@@ -68,6 +69,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         holder.fileName.setText(uploadCurrent.getFileName());
         holder.startDate.setText(uploadCurrent.getStartDate());
         holder.endDate.setText(uploadCurrent.getEndDate());
+        holder.fileStatus.setText(uploadCurrent.getFileStatus());
 
         holder.buttonViewOption.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,12 +175,21 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     }
 
 
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
+    }
+
     public class FileViewHolder extends RecyclerView.ViewHolder {
 
         public TextView buttonViewOption;
         public TextView fileName;
         public TextView startDate;
         public TextView endDate;
+        public TextView fileStatus;
 
         public FileViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -187,6 +198,23 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
             fileName = (TextView) itemView.findViewById(R.id.fileName_textView);
             startDate = (TextView) itemView.findViewById(R.id.start_textView);
             endDate = (TextView) itemView.findViewById(R.id.end_textView);
+            fileStatus = (TextView) itemView.findViewById(R.id.fileStatus);
+
+
+            // when we click on each file
+            // any part of it
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mListener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            mListener.onItemClick(position);
+                        }
+                    }
+                }
+            });
+
         }
     }
 }
