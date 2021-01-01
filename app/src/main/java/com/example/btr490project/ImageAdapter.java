@@ -49,6 +49,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
@@ -80,10 +81,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     public void onBindViewHolder(@NonNull final ImageViewHolder holder, final int position) {
 
         final ImageUpload uploadCurrent = mUploads.get(position);
-        Picasso.get().load(uploadCurrent.getImageUrl()).placeholder(R.drawable.ic_image_black_24dp).fit().centerCrop().into(holder.imageView);
+        Picasso.get().load(uploadCurrent.getImageUrl()).placeholder(R.drawable.ic_image_black_24dp)
+                .fit().centerCrop().into(holder.imageView);
+
 
         mStorage = FirebaseStorage.getInstance();
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Images");
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("Users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Images");
 
         holder.buttonViewOption.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,22 +106,46 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
                         switch (item.getItemId()) {
                             case R.id.image_delete:
-                                StorageReference imageRef = mStorage.getReferenceFromUrl(uploadCurrent.getImageUrl());
-                                imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        // if we removed the item from storage we remove it from database too.
-                                        mDatabaseReference.child(uploadCurrent.getImageKey()).removeValue();
-                                        Toast.makeText(mContext, "Image Deleted", Toast.LENGTH_SHORT).show();
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
+                                StorageReference imageRef = mStorage
+                                        .getReferenceFromUrl(uploadCurrent.getImageUrl());
+                                imageRef.delete()
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                // if we removed the item from storage we remove it from database too.
+                                                mDatabaseReference
+                                                        .child(uploadCurrent.getImageKey())
+                                                        .removeValue();
+                                                Toast.makeText(mContext, "Image Deleted", Toast.LENGTH_SHORT)
+                                                        .show();
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(mContext, "Delectation failed", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(mContext, "Delectation failed", Toast.LENGTH_SHORT)
+                                                .show();
                                     }
                                 });
                                 break;
                             case R.id.image_scan:
+
+                                // ******************************************************
+                                // *             Some comments for help                 *
+                                // ******************************************************
+
+                                // to got to the file branch we use below code line
+                                // FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Files");
+                                // you can also store it in a variable to access it easier just (look at the code on lines 63 and 89)
+
+                                // have a look on login file to see how to add keys and value to the database
+                                // in summary we use .child("name of the value") and .setValue(value)  or .updateChildren()
+
+                                // to find code for generating Url go to profileFragment
+
+                                // in branch of selectedFileKey you can find a list of file keys that user selected for scan operations in file fragment
+                                // you can use those keys to have access to specific files to add file urls
+
+
                                 // Create Json Body Requests
                                 JSONObject jsonBody = new JSONObject();
                                 JSONObject data = new JSONObject();
@@ -137,15 +165,19 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
                                 int SDK_INT = android.os.Build.VERSION.SDK_INT;
                                 if (SDK_INT > 8) {
-                                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                                            .permitAll().build();
                                     StrictMode.setThreadPolicy(policy);
 
                                     try {
 
                                         URL url = new URL(uploadCurrent.getImageUrl());
-                                        Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                                        Bitmap bitmap = BitmapFactory
+                                                .decodeStream(url.openConnection()
+                                                                      .getInputStream());
 
-                                        File file = new File(mContext.getExternalCacheDir(), File.separator + uploadCurrent.getImageName());
+                                        File file = new File(mContext.getExternalCacheDir(), File.separator + uploadCurrent
+                                                .getImageName());
                                         FileOutputStream fOut = new FileOutputStream(file);
                                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
                                         fOut.flush();
@@ -154,7 +186,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
                                         final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        Uri photoURI = FileProvider.getUriForFile(mContext, BuildConfig.APPLICATION_ID + ".provider", file);
+                                        Uri photoURI = FileProvider
+                                                .getUriForFile(mContext, BuildConfig.APPLICATION_ID + ".provider", file);
                                         intent.putExtra(Intent.EXTRA_STREAM, photoURI);
                                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                                         intent.setType("image/*"); // set type of the image
@@ -211,7 +244,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                 try {
                     return requestBodyString == null ? null : requestBodyString.getBytes("utf-8");
                 } catch (UnsupportedEncodingException uee) {
-                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBodyString, "utf-8");
+                    VolleyLog
+                            .wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBodyString, "utf-8");
                     return null;
                 }
 
