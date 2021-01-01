@@ -8,17 +8,19 @@ public class FileUpload {
     private String startDate;
     private String endDate;
     private String fileCategory;
+    private String fileUrl;
     private String fileKey;
 
     public FileUpload() {
 
     }
 
-    public FileUpload(String fileName, String startDate, String endDate, String fileCategory) {
+    public FileUpload(String fileName, String startDate, String endDate, String fileCategory, String fileUrl) {
         setFileName(fileName);
         setStartDate(startDate);
         setEndDate(endDate);
         setFileCategory(fileCategory);
+        setFileUrl(fileUrl);
     }
 
     public String getFileName() {
@@ -51,6 +53,14 @@ public class FileUpload {
 
     public void setFileCategory(String fileCategory) {
         this.fileCategory = fileCategory;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 
     @Exclude

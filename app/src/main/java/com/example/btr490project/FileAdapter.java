@@ -12,12 +12,22 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.util.List;
 
 public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder> {
 
     private Context mContext;
     private List<FileUpload> mUploads;
+    private FirebaseStorage mStorage;
+    private DatabaseReference mDatabaseReference;
 
 
     public FileAdapter(Context context, List<FileUpload> uploads) {
@@ -37,6 +47,11 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull final FileAdapter.FileViewHolder holder, final int position) {
+
+        mStorage = FirebaseStorage.getInstance();
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("Users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Files");
+
 
         final FileUpload uploadCurrent = mUploads.get(position);
 
@@ -61,8 +76,26 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
                         switch (item.getItemId()) {
                             case R.id.file_delete:
-                                Toast.makeText(mContext, "delete coming soon!", Toast.LENGTH_SHORT)
-                                        .show();
+
+                                if (uploadCurrent.getFileUrl().equals("URL not associated")){
+                                    mDatabaseReference.child(uploadCurrent.getFileKey()).removeValue();
+                                    Toast.makeText(mContext, "File Deleted", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    StorageReference fileRef = mStorage.getReferenceFromUrl(uploadCurrent.getFileUrl());
+                                    fileRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // if we removed the item from storage we remove it from database too.
+                                            mDatabaseReference.child(uploadCurrent.getFileKey()).removeValue();
+                                            Toast.makeText(mContext, "Image Deleted", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(mContext, "Delectation failed", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
                                 break;
                             case R.id.file_share:
                                 Toast.makeText(mContext, "share coming soon!", Toast.LENGTH_SHORT)

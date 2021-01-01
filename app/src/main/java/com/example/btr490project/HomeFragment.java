@@ -197,7 +197,7 @@ public class HomeFragment extends Fragment {
                         } else {
                             String startDate = txt_startMonth + "/" + txt_startDay + "/" + txt_startYear;
                             String endDate = txt_endMonth + "/" + txt_endDay + "/" + txt_endYear;
-                            FileUpload fileInfo = new FileUpload(txt_fileName, startDate, endDate, fileCategory);
+                            FileUpload fileInfo = new FileUpload(txt_fileName, startDate, endDate, fileCategory,"URL not associated");
 
                             // Id for each File inside of database
                             String fileId = ref.push().getKey();
