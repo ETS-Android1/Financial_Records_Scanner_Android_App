@@ -200,7 +200,6 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
             endDate = (TextView) itemView.findViewById(R.id.end_textView);
             fileStatus = (TextView) itemView.findViewById(R.id.fileStatus);
 
-
             // when we click on each file
             // any part of it
             itemView.setOnClickListener(new View.OnClickListener() {

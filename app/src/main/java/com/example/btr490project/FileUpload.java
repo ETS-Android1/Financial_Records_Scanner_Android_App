@@ -2,6 +2,8 @@ package com.example.btr490project;
 
 import com.google.firebase.database.Exclude;
 
+import java.util.ArrayList;
+
 public class FileUpload {
 
     private String fileName;
@@ -11,6 +13,7 @@ public class FileUpload {
     private String fileUrl;
     private String fileKey;
     private String fileStatus;
+    private ArrayList<String> selectedFiles;
 
 
     public FileUpload() {
@@ -23,6 +26,7 @@ public class FileUpload {
         setEndDate(endDate);
         setFileCategory(fileCategory);
         setFileUrl(fileUrl);
+        setFileStatus(" ");
     }
 
     public String getFileName() {

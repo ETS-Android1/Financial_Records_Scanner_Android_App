@@ -1,9 +1,11 @@
 package com.example.btr490project;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,8 +23,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.security.Key;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.function.Predicate;
 
 
 public class FileFragment extends Fragment {
@@ -32,6 +37,8 @@ public class FileFragment extends Fragment {
     private DatabaseReference mDatabaseReference;
     private List<FileUpload> mUploads;
     private ProgressBar mProgressBar;
+    private ArrayList<String> keysArray;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,6 +55,7 @@ public class FileFragment extends Fragment {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        keysArray = new ArrayList<>();
         mUploads = new ArrayList<>();
 
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("Users")
@@ -63,8 +71,6 @@ public class FileFragment extends Fragment {
                     FileUpload upload = postSnapshot.getValue(FileUpload.class);
                     // setting file ids when we getting them from fire base
                     upload.setFileKey(postSnapshot.getKey());
-                    // setting file status
-                    upload.setFileStatus(" ");
 
                     mUploads.add(upload);
                 }
@@ -73,22 +79,37 @@ public class FileFragment extends Fragment {
                 mRecyclerView.setAdapter(mAdapter);
                 mProgressBar.setVisibility(View.INVISIBLE);
                 mAdapter.setOnItemClickListener(new FileAdapter.OnItemClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
-                    public void onItemClick(int position) {
+                    public void onItemClick(final int position) {
 
                         if (mUploads.get(position).getFileStatus().equals(" ")) {
                             changeItemStatus(position, "Selected");
+                            keysArray.add(mUploads.get(position).getFileKey());
                         } else {
                             changeItemStatus(position, " ");
+                            keysArray.removeIf(new Predicate<String>() {
+                                @Override
+                                public boolean test(String n) {
+                                    return (n.equals(mUploads.get(position).getFileKey()));
+                                }
+                            });
                         }
 
+                        keysUpload k = new keysUpload(keysArray);
+
+                        FirebaseDatabase.getInstance().getReference("Users")
+                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                .child("SelectedFileKeys").setValue(k);
                     }
 
                 });
             }
 
             public void changeItemStatus(int position, String text) {
-                mUploads.get(position).setFileStatus(text);
+                mDatabaseReference.child(mUploads.get(position).getFileKey()).child("fileStatus")
+                        .setValue(text);
+
                 mAdapter.notifyItemChanged(position);
             }
 
