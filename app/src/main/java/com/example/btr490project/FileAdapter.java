@@ -88,75 +88,12 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
                         switch (item.getItemId()) {
                             case R.id.file_delete:
-
-                                if (uploadCurrent.getFileUrl().equals("URL not associated")) {
-                                    mDatabaseReference.child(uploadCurrent.getFileKey())
-                                            .removeValue();
-                                    Toast.makeText(mContext, "File Deleted", Toast.LENGTH_SHORT)
-                                            .show();
-                                } else {
-                                    StorageReference fileRef = mStorage
-                                            .getReferenceFromUrl(uploadCurrent.getFileUrl());
-                                    fileRef.delete()
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    // if we removed the item from storage we remove it from database too.
-                                                    mDatabaseReference
-                                                            .child(uploadCurrent.getFileKey())
-                                                            .removeValue();
-                                                    Toast.makeText(mContext, "File Deleted", Toast.LENGTH_SHORT)
-                                                            .show();
-                                                }
-                                            }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(mContext, "Delectation failed", Toast.LENGTH_SHORT)
-                                                    .show();
-                                        }
-                                    });
-                                }
+                                Toast.makeText(mContext, "File Delete Option Come Soon!", Toast.LENGTH_SHORT)
+                                        .show();
                                 break;
                             case R.id.file_share:
-                                int SDK_INT = android.os.Build.VERSION.SDK_INT;
-                                if (SDK_INT > 8) {
-                                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                                            .permitAll().build();
-                                    StrictMode.setThreadPolicy(policy);
-
-                                    try {
-                                        if (uploadCurrent.getFileUrl()
-                                                .equals("URL not associated")) {
-                                            Toast.makeText(mContext, "File is empty", Toast.LENGTH_SHORT)
-                                                    .show();
-                                        } else {
-                                            URL url = new URL(uploadCurrent.getFileUrl());
-                                            Bitmap bitmap = BitmapFactory
-                                                    .decodeStream(url.openConnection()
-                                                                          .getInputStream());
-
-                                            File file = new File(mContext.getExternalCacheDir(), File.separator + uploadCurrent
-                                                    .getFileName() + ".jpg"); // this must change according to the type of the file we are trying to share
-                                            FileOutputStream fOut = new FileOutputStream(file);
-                                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
-                                            fOut.flush();
-                                            fOut.close();
-                                            file.setReadable(true, false);
-
-                                            final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            Uri photoURI = FileProvider
-                                                    .getUriForFile(mContext, BuildConfig.APPLICATION_ID + ".provider", file);
-                                            intent.putExtra(Intent.EXTRA_STREAM, photoURI);
-                                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                            // we need to change this according to the type of file
-                                            intent.setType("image/*"); // set type of for all images
-                                            mContext.startActivity(Intent.createChooser(intent, "Share File via")); // title of share window
-                                        }
-                                    } catch (IOException e) {
-                                        System.out.println(e);
-                                    }
-                                }
+                                Toast.makeText(mContext, "File Share Option Come Soon!", Toast.LENGTH_SHORT)
+                                        .show();
                                 break;
                         }
                         return false;
