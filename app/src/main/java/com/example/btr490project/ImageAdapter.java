@@ -2,6 +2,7 @@ package com.example.btr490project;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -50,7 +51,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -106,7 +109,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
                         switch (item.getItemId()) {
                             case R.id.image_delete:
-                                Toast.makeText(mContext, "Image Delete Option Come Soon!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, "Image Delete Option Come Soon!", Toast.LENGTH_SHORT)
+                                        .show();
                                 break;
                             case R.id.image_scan:
                                 // Create Json Body Requests
@@ -126,7 +130,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
                             case R.id.image_share:
 
-                                Toast.makeText(mContext, "Image Share Option Come Soon!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, "Image Share Option Come Soon!", Toast.LENGTH_SHORT)
+                                        .show();
 
                                 break;
                         }
@@ -182,12 +187,20 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
             }
 
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                SharedPreferences preferences = mContext
+                        .getSharedPreferences("key_preferences", Context.MODE_PRIVATE);
+                headers.put("Authorization", preferences.getString("API_KEY", "NULL"));
+                return headers;
+            }
+
         };
 
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
     }
-
 
     @Override
     public int getItemCount() {

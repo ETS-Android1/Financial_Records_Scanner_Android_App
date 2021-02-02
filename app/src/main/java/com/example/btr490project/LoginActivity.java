@@ -5,8 +5,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 
 import android.util.Log;
@@ -17,6 +20,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -44,8 +55,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -207,7 +220,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-
     // It checks information that user entered with firebase to give permission for login
     private void loginUser(String email, String password) {
 
@@ -215,11 +227,86 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(AuthResult authResult) {
                 Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                FirebaseUser user = mAuth.getCurrentUser();
+                final FirebaseUser user = mAuth.getCurrentUser();
+                // working
+                // make request here
+                // Create Json Body Requests
+
+                JSONObject jsonBody = new JSONObject();
+                JSONObject data = new JSONObject();
+
+                try {
+                    jsonBody.put("username", "test");
+                    jsonBody.put("password", user.getEmail());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 updateUI(user);
+                jwtAuthentication(jsonBody);
             }
         });
     }
+
+    // Retrieves JWT Token from Flask-API
+    private void jwtAuthentication(final JSONObject requestBody) {
+        final RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
+        final String url = "http://192.168.0.15:8080/auth";
+        final String requestBodyString = requestBody.toString();
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                                                        new Response.Listener<String>() {
+                                                            @Override
+                                                            public void onResponse(String response) {
+                                                                // Display the response string
+                                                                storeToken(response);
+                                                            }
+
+                                                        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(LoginActivity.this, "Authentication Failed", Toast.LENGTH_LONG).show();
+            }
+
+        }) {
+
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+
+                try {
+                    return requestBodyString == null ? null : requestBodyString.getBytes("utf-8");
+                } catch(UnsupportedEncodingException uee){
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBodyString, "utf-8");
+                    return null;
+                }
+            }
+        };
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
+    // Store Token into SharedPreferences Private File
+    private void storeToken(String token) {
+
+        SharedPreferences preferences = LoginActivity.this.getSharedPreferences("key_preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        try {
+            JSONObject JWT = new JSONObject(token);
+            String jwt_token = "JWT " + JWT.getString("access_token");
+            editor.putString("API_KEY", jwt_token);
+            editor.commit();
+            Toast.makeText(LoginActivity.this, jwt_token, Toast.LENGTH_LONG).show();
+        }catch (JSONException err){
+            System.out.println(err);
+        }
+    }
+
 
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
