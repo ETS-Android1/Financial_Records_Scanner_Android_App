@@ -5,8 +5,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 
 import android.util.Log;
@@ -17,6 +20,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -44,8 +55,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -92,9 +105,11 @@ public class LoginActivity extends AppCompatActivity {
                     password.setError("Please enter your password");
                     password.requestFocus();
                 } else if (TextUtils.isEmpty(txt_email) && TextUtils.isEmpty(txt_password)) {
-                    Toast.makeText(LoginActivity.this, "Fields Are Empty!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Fields Are Empty!", Toast.LENGTH_SHORT)
+                            .show();
                 } else if (txt_password.length() < 6) {
-                    Toast.makeText(LoginActivity.this, "Password must be more than 6 digits", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Password must be more than 6 digits", Toast.LENGTH_SHORT)
+                            .show();
                 } else {
                     loginUser(txt_email, txt_password);
                 }
@@ -105,7 +120,8 @@ public class LoginActivity extends AppCompatActivity {
         //############## Google Sign In ####################
 
         // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
 
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -130,7 +146,8 @@ public class LoginActivity extends AppCompatActivity {
                 handleFaceBookToken(loginResult.getAccessToken());
 
                 // Facebook Email address
-                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                GraphRequest request = GraphRequest.newMeRequest(loginResult
+                                                                         .getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         try {
@@ -182,44 +199,126 @@ public class LoginActivity extends AppCompatActivity {
     private void handleFaceBookToken(AccessToken token) {
         Log.d(TAG, "handleFaceBookToken" + token);
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
 
-                if (task.isSuccessful()) {
-                    Toast.makeText(LoginActivity.this, "Signed In Successfully", Toast.LENGTH_SHORT).show();
-                    FirebaseUser user = mAuth.getCurrentUser();
+                        if (task.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "Signed In Successfully", Toast.LENGTH_SHORT)
+                                    .show();
+                            FirebaseUser user = mAuth.getCurrentUser();
 
-                    // adding information of current user to database
-                    HashMap<String, Object> userInfo = new HashMap<>();
-                    userInfo.put("Name", user.getDisplayName());
-                    userInfo.put("Email", FEmail);
-                    userInfo.put("login_type", "FaceBook");
-                    userInfo.put("profilePicUrl", "default");
-                    FirebaseDatabase.getInstance().getReference().child("Users").child(user.getUid()).updateChildren(userInfo);
-                    updateUI(user);
-                } else {
-                    Toast.makeText(LoginActivity.this, "Sign In Failed", Toast.LENGTH_SHORT).show();
-                    updateUI(null);
-                }
+                            // adding information of current user to database
+                            HashMap<String, Object> userInfo = new HashMap<>();
+                            userInfo.put("Name", user.getDisplayName());
+                            userInfo.put("Email", FEmail);
+                            userInfo.put("login_type", "FaceBook");
+                            userInfo.put("profilePicUrl", "default");
+                            FirebaseDatabase.getInstance().getReference().child("Users")
+                                    .child(user.getUid()).updateChildren(userInfo);
+                            updateUI(user);
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Sign In Failed", Toast.LENGTH_SHORT)
+                                    .show();
+                            updateUI(null);
+                        }
 
-            }
-        });
+                    }
+                });
     }
-
 
     // It checks information that user entered with firebase to give permission for login
     private void loginUser(String email, String password) {
 
-        mAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-            @Override
-            public void onSuccess(AuthResult authResult) {
-                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                FirebaseUser user = mAuth.getCurrentUser();
-                updateUI(user);
-            }
-        });
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                    @Override
+                    public void onSuccess(AuthResult authResult) {
+                        Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT)
+                                .show();
+                        final FirebaseUser user = mAuth.getCurrentUser();
+                        // working
+                        // make request here
+                        // Create Json Body Requests
+
+                        JSONObject jsonBody = new JSONObject();
+                        JSONObject data = new JSONObject();
+
+                        try {
+                            jsonBody.put("username", "test");
+                            jsonBody.put("password", user.getEmail());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        updateUI(user);
+                        jwtAuthentication(jsonBody);
+                    }
+                });
     }
+
+    // Retrieves JWT Token from Flask-API
+    private void jwtAuthentication(final JSONObject requestBody) {
+        final RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
+        final String url = "http://192.168.0.15:8080/auth";
+        final String requestBodyString = requestBody.toString();
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                // Display the response string
+                storeToken(response);
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(LoginActivity.this, "Authentication Failed", Toast.LENGTH_LONG)
+                        .show();
+            }
+
+        }) {
+
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+
+                try {
+                    return requestBodyString == null ? null : requestBodyString.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog
+                            .wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBodyString, "utf-8");
+                    return null;
+                }
+            }
+        };
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+
+    // Store Token into SharedPreferences Private File
+    private void storeToken(String token) {
+
+        SharedPreferences preferences = LoginActivity.this
+                .getSharedPreferences("key_preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        try {
+            JSONObject JWT = new JSONObject(token);
+            String jwt_token = "JWT " + JWT.getString("access_token");
+            editor.putString("API_KEY", jwt_token);
+            editor.commit();
+            Toast.makeText(LoginActivity.this, jwt_token, Toast.LENGTH_LONG).show();
+        } catch (JSONException err) {
+            System.out.println(err);
+        }
+    }
+
 
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
@@ -237,7 +336,8 @@ public class LoginActivity extends AppCompatActivity {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account.getIdToken());
-                Toast.makeText(LoginActivity.this, "Signed In Successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Signed In Successfully", Toast.LENGTH_SHORT)
+                        .show();
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Toast.makeText(LoginActivity.this, "Sign In Failed", Toast.LENGTH_SHORT).show();
@@ -247,28 +347,30 @@ public class LoginActivity extends AppCompatActivity {
 
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    FirebaseUser user = mAuth.getCurrentUser();
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = mAuth.getCurrentUser();
 
-                    HashMap<String, Object> userInfo = new HashMap<>();
-                    userInfo.put("Name", user.getDisplayName());
-                    userInfo.put("Email", user.getEmail());
-                    userInfo.put("login_type", "Google");
-                    userInfo.put("profilePicUrl", "default");
-                    FirebaseDatabase.getInstance().getReference().child("Users").child(user.getUid()).updateChildren(userInfo);
+                            HashMap<String, Object> userInfo = new HashMap<>();
+                            userInfo.put("Name", user.getDisplayName());
+                            userInfo.put("Email", user.getEmail());
+                            userInfo.put("login_type", "Google");
+                            userInfo.put("profilePicUrl", "default");
+                            FirebaseDatabase.getInstance().getReference().child("Users")
+                                    .child(user.getUid()).updateChildren(userInfo);
 
-                    updateUI(user);
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Toast.makeText(LoginActivity.this, "Failed", Toast.LENGTH_SHORT).show();
-                    updateUI(null);
-                }
+                            updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(LoginActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                            updateUI(null);
+                        }
 
-            }
-        });
+                    }
+                });
     }
 
     public void onStart() {
