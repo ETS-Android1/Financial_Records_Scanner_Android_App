@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,9 +31,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -64,6 +69,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     private List<ImageUpload> mUploads;
     private FirebaseStorage mStorage;
     private DatabaseReference mDatabaseReference;
+    private String userId;
 
     public ImageAdapter(Context context, List<ImageUpload> uploads) {
         mContext = context;
@@ -138,7 +144,33 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
                                 // to got to the file branch we use below code line
                                 // FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Files");
-                                // you can also store it in a variable to access it easier just (look at the code on lines 63 and 89)
+                                // you can also store it in a variable to access it easier just (look at the code on lines 63 and 89
+
+                                /*
+                                mDatabaseReference.child("Users").child(userId).child("Email").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DataSnapshot> task) {
+                                        if(task.isSuccessful()){
+                                           userEmail = task.getResult().getValue().toString();
+
+                                            try {
+                                                JSONObject obj = new JSONObject(userObject);
+                                                userEmail = obj.get("email").toString();
+
+                                            } catch (Throwable t) {
+                                                Log.e("My App", "Could not parse malformed JSON: \"" + userObject + "\"");
+                                            }
+
+
+                                        }else{
+                                            Log.d("firebase", String.valueOf(task.getResult().getValue()));
+                                        }
+                                    }
+                                });
+                                */
+
+                                Toast.makeText(mContext, userId,
+                                        Toast.LENGTH_SHORT).show();
 
                                 // have a look on login file to see how to add keys and value to the database
                                 // in summary we use .child("name of the value") and .setValue(value)  or .updateChildren()
@@ -149,15 +181,18 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                                 // you can use those keys to have access to specific files to add file urls
 
 
+                                // Get Current User ID
+                                userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
                                 // Create Json Body Requests
                                 JSONObject jsonBody = new JSONObject();
                                 JSONObject data = new JSONObject();
 
                                 try {
-                                    jsonBody.put("json_ID", "data_test.json");
+                                    jsonBody.put("User_ID", userId);
                                     jsonBody.put("spreadsheet_ID", "spreadsheet1");
                                     jsonBody.put("image_ID", uploadCurrent.getImageName());
-                                    data.put("Image_Request_1", jsonBody);
+                                    data.put("Image_Request", jsonBody);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -215,7 +250,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
     private void scanImageAPI(final JSONObject requestBody) {
         final RequestQueue queue = Volley.newRequestQueue(mContext);
-        final String url = "http://192.168.0.15:8080/process_images";
+        final String url = "http://192.168.0.19:8080/process_images";
         final String requestBodyString = requestBody.toString();
 
         // Request a string response from the provided URL.

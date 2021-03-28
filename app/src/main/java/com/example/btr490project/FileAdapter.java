@@ -85,7 +85,6 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
 
-
                         switch (item.getItemId()) {
                             case R.id.file_delete:
 
@@ -111,7 +110,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                                             }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(mContext, "Delectation failed", Toast.LENGTH_SHORT)
+                                            Toast.makeText(mContext, "Deletion failed", Toast.LENGTH_SHORT)
                                                     .show();
                                         }
                                     });
