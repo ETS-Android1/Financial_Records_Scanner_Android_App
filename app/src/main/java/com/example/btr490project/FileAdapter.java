@@ -123,37 +123,18 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                                             .permitAll().build();
                                     StrictMode.setThreadPolicy(policy);
 
-                                    try {
-                                        if (uploadCurrent.getFileUrl()
-                                                .equals("URL not associated")) {
-                                            Toast.makeText(mContext, "File is empty", Toast.LENGTH_SHORT)
-                                                    .show();
-                                        } else {
-                                            URL url = new URL(uploadCurrent.getFileUrl());
-                                            Bitmap bitmap = BitmapFactory
-                                                    .decodeStream(url.openConnection()
-                                                                          .getInputStream());
+                                    if (uploadCurrent.getFileUrl()
+                                            .equals("URL not associated")) {
+                                        Toast.makeText(mContext, "File is empty", Toast.LENGTH_SHORT)
+                                                .show();
+                                    } else {
 
-                                            File file = new File(mContext.getExternalCacheDir(), File.separator + uploadCurrent
-                                                    .getFileName() + ".jpg"); // this must change according to the type of the file we are trying to share
-                                            FileOutputStream fOut = new FileOutputStream(file);
-                                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
-                                            fOut.flush();
-                                            fOut.close();
-                                            file.setReadable(true, false);
-
-                                            final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            Uri photoURI = FileProvider
-                                                    .getUriForFile(mContext, BuildConfig.APPLICATION_ID + ".provider", file);
-                                            intent.putExtra(Intent.EXTRA_STREAM, photoURI);
-                                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                            // we need to change this according to the type of file
-                                            intent.setType("image/*"); // set type of for all images
-                                            mContext.startActivity(Intent.createChooser(intent, "Share File via")); // title of share window
-                                        }
-                                    } catch (IOException e) {
-                                        System.out.println(e);
+                                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                        shareIntent.setType("application/*");
+                                        shareIntent.putExtra(Intent.EXTRA_TEXT, uploadCurrent.getFileUrl());
+                                        mContext.startActivity(Intent.createChooser(shareIntent, "Share link using"));
+                                        Toast.makeText(mContext, "File is shared", Toast.LENGTH_SHORT)
+                                                .show();
                                     }
                                 }
                                 break;
