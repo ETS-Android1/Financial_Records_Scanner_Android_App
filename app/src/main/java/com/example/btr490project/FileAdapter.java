@@ -133,8 +133,6 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                                         shareIntent.setType("application/*");
                                         shareIntent.putExtra(Intent.EXTRA_TEXT, uploadCurrent.getFileUrl());
                                         mContext.startActivity(Intent.createChooser(shareIntent, "Share link using"));
-                                        Toast.makeText(mContext, "File is shared", Toast.LENGTH_SHORT)
-                                                .show();
                                     }
                                 }
                                 break;
