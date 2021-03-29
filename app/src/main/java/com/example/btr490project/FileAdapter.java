@@ -123,16 +123,32 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                                             .permitAll().build();
                                     StrictMode.setThreadPolicy(policy);
 
-                                    if (uploadCurrent.getFileUrl()
-                                            .equals("URL not associated")) {
+                                    if (uploadCurrent.getFileUrl().equals("URL not associated")) {
                                         Toast.makeText(mContext, "File is empty", Toast.LENGTH_SHORT)
                                                 .show();
                                     } else {
+                                        
+                                        mStorage.getReference().child("documents/" + uploadCurrent
+                                                .getFileName() + ".json").getDownloadUrl()
+                                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                    @Override
+                                                    public void onSuccess(Uri uri) {
+                                                        // Got the download URL for 'users/me/profile.png'
+                                                        Toast.makeText(mContext, uri.toString(), Toast.LENGTH_SHORT)
+                                                                .show();
+                                                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                                        shareIntent.setType("application/*");
+                                                        shareIntent
+                                                                .putExtra(Intent.EXTRA_TEXT, uri.toString());
+                                                        mContext.startActivity(Intent.createChooser(shareIntent, "Share link using"));
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception exception) {
+                                                // Handle any errors
+                                            }
+                                        });
 
-                                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                        shareIntent.setType("application/*");
-                                        shareIntent.putExtra(Intent.EXTRA_TEXT, uploadCurrent.getFileUrl());
-                                        mContext.startActivity(Intent.createChooser(shareIntent, "Share link using"));
                                     }
                                 }
                                 break;
