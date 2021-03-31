@@ -127,7 +127,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                                         Toast.makeText(mContext, "File is empty", Toast.LENGTH_SHORT)
                                                 .show();
                                     } else {
-                                        
+
                                         mStorage.getReference().child("documents/" + uploadCurrent
                                                 .getFileName() + ".json").getDownloadUrl()
                                                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
