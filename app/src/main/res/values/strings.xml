@@ -7,9 +7,10 @@
 
     <string-array name="categories">
         <item>None</item>
-        <item>bar</item>
-        <item>restaurant</item>
-        <item>pizzeria</item>
+        <item>Business</item>
+        <item>Utilities</item>
+        <item>Food</item>
+        <item>Entertainment</item>
     </string-array>
 
 </resources>
