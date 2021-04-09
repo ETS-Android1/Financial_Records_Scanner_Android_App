@@ -1,23 +1,42 @@
 package com.example.btr490project;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.StrictMode;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,11 +45,22 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder> {
 
@@ -39,6 +69,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     private FirebaseStorage mStorage;
     private DatabaseReference mDatabaseReference;
     private OnItemClickListener mListener;
+    private RequestQueue requestQueue;
 
 
     public FileAdapter(Context context, List<FileUpload> uploads) {
@@ -134,12 +165,13 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                                                     @Override
                                                     public void onSuccess(Uri uri) {
                                                         // Got the download URL for 'users/me/profile.png'
-                                                        Toast.makeText(mContext, uri.toString(), Toast.LENGTH_SHORT)
+                                                        Toast.makeText(mContext, uri
+                                                                .toString(), Toast.LENGTH_SHORT)
                                                                 .show();
                                                         Intent shareIntent = new Intent(Intent.ACTION_SEND);
                                                         shareIntent.setType("application/*");
-                                                        shareIntent
-                                                                .putExtra(Intent.EXTRA_TEXT, uri.toString());
+                                                        shareIntent.putExtra(Intent.EXTRA_TEXT, uri
+                                                                .toString());
                                                         mContext.startActivity(Intent.createChooser(shareIntent, "Share link using"));
                                                     }
                                                 }).addOnFailureListener(new OnFailureListener() {
@@ -152,6 +184,25 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                                     }
                                 }
                                 break;
+                            case R.id.file_view:
+                                mStorage.getReference()
+                                        .child("documents/" + uploadCurrent.getFileName() + ".json")
+                                        .getDownloadUrl()
+                                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                            @Override
+                                            public void onSuccess(Uri uri) {
+
+                                                fileViewDialog(uri);
+
+                                            }
+
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        // Handle any errors
+                                    }
+                                });
+                                break;
                         }
                         return false;
                     }
@@ -162,6 +213,47 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         });
     }
 
+    private void fileViewDialog(Uri uri) {
+        LayoutInflater layoutInflater = (LayoutInflater) mContext
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = layoutInflater.inflate(R.layout.file_view_dialog, null);
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(mContext).setView(view)
+                .setNegativeButton("Cancel", null).create();
+
+        final TextView fileViewer = (TextView) view.findViewById(R.id.file_view_content);
+        requestQueue = Volley.newRequestQueue(mContext);
+        String url = uri.toString();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                fileViewer.setText(response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+        requestQueue.add(request);
+
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                Button buttonNegative = ((AlertDialog) dialog)
+                        .getButton(DialogInterface.BUTTON_NEGATIVE);
+                buttonNegative.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        alertDialog.dismiss();
+                    }
+                });
+            }
+        });
+        alertDialog.show();
+    }
 
     @Override
     public int getItemCount() {

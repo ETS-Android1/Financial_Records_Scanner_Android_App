@@ -9,6 +9,10 @@
         <item
             android:id="@+id/file_share"
             android:title="Share" />
+
+        <item
+            android:id="@+id/file_view"
+            android:title="View" />
     </group>
 
 </menu>
