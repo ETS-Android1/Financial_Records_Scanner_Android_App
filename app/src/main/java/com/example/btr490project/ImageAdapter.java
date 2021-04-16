@@ -24,6 +24,7 @@ import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -65,6 +66,8 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
 
+    private static final int MY_SOCKET_TIMEOUT_MS = 10000;
+    private static final int MY_SOCKET_MAX_RETRIES = 0;
     private Context mContext;
     private List<ImageUpload> mUploads;
     private FirebaseStorage mStorage;
@@ -138,49 +141,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                                 break;
                             case R.id.image_scan:
 
-                                // ******************************************************
-                                // *             Some comments for help                 *
-                                // ******************************************************
-
-                                // to got to the file branch we use below code line
-                                // FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Files");
-                                // you can also store it in a variable to access it easier just (look at the code on lines 63 and 89
-
-                                /*
-                                mDatabaseReference.child("Users").child(userId).child("Email").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<DataSnapshot> task) {
-                                        if(task.isSuccessful()){
-                                           userEmail = task.getResult().getValue().toString();
-
-                                            try {
-                                                JSONObject obj = new JSONObject(userObject);
-                                                userEmail = obj.get("email").toString();
-
-                                            } catch (Throwable t) {
-                                                Log.e("My App", "Could not parse malformed JSON: \"" + userObject + "\"");
-                                            }
-
-
-                                        }else{
-                                            Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                                        }
-                                    }
-                                });
-                                */
-
-                                Toast.makeText(mContext, userId,
-                                        Toast.LENGTH_SHORT).show();
-
-                                // have a look on login file to see how to add keys and value to the database
-                                // in summary we use .child("name of the value") and .setValue(value)  or .updateChildren()
-
-                                // to find code for generating Url go to profileFragment
-
-                                // in branch of selectedFileKey you can find a list of file keys that user selected for scan operations in file fragment
-                                // you can use those keys to have access to specific files to add file urls
-
-
                                 // Get Current User ID
                                 userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -250,7 +210,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
     private void scanImageAPI(final JSONObject requestBody) {
         final RequestQueue queue = Volley.newRequestQueue(mContext);
-        final String url = "http://192.168.0.19:8080/process_images";
+        final String url = "http://192.168.0.11:8080/process_images";
         final String requestBodyString = requestBody.toString();
 
         // Request a string response from the provided URL.
@@ -258,7 +218,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
             @Override
             public void onResponse(String response) {
                 // Display the response string.
-                final String apiResponse = ("Response is: " + response);
+                final String apiResponse = (response);
                 Toast.makeText(mContext, apiResponse, Toast.LENGTH_LONG).show();
 
             }
@@ -302,8 +262,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
-    }
 
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                MY_SOCKET_TIMEOUT_MS,
+                MY_SOCKET_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
+    }
 
     @Override
     public int getItemCount() {

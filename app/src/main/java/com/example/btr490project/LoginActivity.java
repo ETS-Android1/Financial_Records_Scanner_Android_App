@@ -260,7 +260,7 @@ public class LoginActivity extends AppCompatActivity {
     // Retrieves JWT Token from Flask-API
     private void jwtAuthentication(final JSONObject requestBody) {
         final RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-        final String url = "http://192.168.0.19:8080/auth";
+        final String url = "http://192.168.0.11:8080/auth";
         final String requestBodyString = requestBody.toString();
 
         // Request a string response from the provided URL.
@@ -313,7 +313,6 @@ public class LoginActivity extends AppCompatActivity {
             String jwt_token = "JWT " + JWT.getString("access_token");
             editor.putString("API_KEY", jwt_token);
             editor.commit();
-            Toast.makeText(LoginActivity.this, jwt_token, Toast.LENGTH_LONG).show();
         } catch (JSONException err) {
             System.out.println(err);
         }
