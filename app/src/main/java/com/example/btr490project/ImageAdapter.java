@@ -63,10 +63,9 @@ import java.util.Map;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
-
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
 
-    private static final int MY_SOCKET_TIMEOUT_MS = 10000;
+    private static final int MY_SOCKET_TIMEOUT_MS = 15000;
     private static final int MY_SOCKET_MAX_RETRIES = 0;
     private Context mContext;
     private List<ImageUpload> mUploads;
@@ -207,10 +206,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         });
     }
 
-
     private void scanImageAPI(final JSONObject requestBody) {
         final RequestQueue queue = Volley.newRequestQueue(mContext);
-        final String url = "http://192.168.0.11:8080/process_images";
+        final String url = "https://vision-api-uag83.ondigitalocean.app/process_images";
         final String requestBodyString = requestBody.toString();
 
         // Request a string response from the provided URL.

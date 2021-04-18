@@ -260,7 +260,7 @@ public class LoginActivity extends AppCompatActivity {
     // Retrieves JWT Token from Flask-API
     private void jwtAuthentication(final JSONObject requestBody) {
         final RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
-        final String url = "http://192.168.0.11:8080/auth";
+        final String url = "https://vision-api-uag83.ondigitalocean.app/auth";
         final String requestBodyString = requestBody.toString();
 
         // Request a string response from the provided URL.
