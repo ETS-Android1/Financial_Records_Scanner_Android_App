@@ -24,3 +24,4 @@ Use your Android device to take a picture of the receipt. Our app will use in ho
 At the end of the year, your accountant has to go through this large CSV file with all the categories and simply call functions like =SUM(), =AVERAGE(), =COUNT()...
 
 All photos of the Raw receipt will be stored on our database and will be in the same folder/linked together with the CSV file line. Each line in the CSV file will contain an id that will be linked to its corresponding photo. Photos will be kept for evidence in case the physical receipt is lost or damaged. We will have all of the functions that a normal CSV file has.Receipt Building App
+
