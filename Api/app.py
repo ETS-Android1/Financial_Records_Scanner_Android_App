@@ -1,10 +1,10 @@
-
 import json
 from flask import Flask, request, jsonify, make_response
 from flask_restful import Api, Resource, reqparse, abort 
 from flask_jwt import JWT, jwt_required, current_identity
-from manager import retrieve_USERS_PROTOCOL, start_FETCHING_PROTOCOL, start_aggregation_PROTOCOL, start_migration_PROTOCOL, task_report_PROTOCOL
+from manager import create_DOCUMENT_LIST_PROTOCOL, retrieve_USERS_PROTOCOL, start_FETCHING_PROTOCOL, start_aggregation_PROTOCOL, start_migration_PROTOCOL, task_report_PROTOCOL
 from analyzer import Extractor
+from werkzeug.security import safe_str_cmp
 
 app = Flask(__name__)
 api = Api(app)
@@ -13,62 +13,80 @@ parser = reqparse.RequestParser()
 extractor = Extractor()
 users = []
 
+# ******************* JWT Authentication Setup *********************** #
 class User(object):
-    def __init__(self,user_id, user_name, user_email):
-        self.id = user_id
-        self.user_ID = user_name
-        self.user_Email = user_email
+    def __init__(self, id, username, password):
+        self.id = id
+        self.username = username
+        self.password = password
+
+    def __str__(self):
+        return "User(id='%s')" % self.id
 
 for user, user_id in zip(retrieve_USERS_PROTOCOL().values(), retrieve_USERS_PROTOCOL()):
     users.append(User(user_id ,user['Name'],user['Email'])) 
 
-user_ID_table = {u.user_ID: u for u in users} 
-user_email_table = {u.user_Email: u for u in users}
+username_table = {u.username: u for u in users}
+userid_table = {u.id: u for u in users}
 
-def authenticate(user_ID, user_email):
-    global user_email_table
-    temp_user = user_email_table.get(user_email, None)  
-    return temp_user
+def authenticate(username, password):
+    user = username_table.get(username, None)
+    if user and safe_str_cmp(user.password.encode('utf-8'), password.encode('utf-8')):
+        return user
 
 def identity(payload):
-    global user_ID_table
     user_id = payload['identity']
-    return user_ID_table.get(user_id, None) 
+    return userid_table.get(user_id, None)
 
-app.config['SECRET_KEY'] = 'VMFqJhpkUFVUTovH0H3x210iB8Na3P1ZUusS9jOuJllmJa0EZ26GSuRds1hC'
+
+app.config['JWT_SECRET_KEY'] = 'VMFqJhpkUFVUTovH0H3x210iB8Na3P1ZUusS9jOuJllmJa0EZ26GSuRds1hC'
 jwt = JWT(app, authenticate, identity)
 
-class Protected(Resource):
+# ******************* Flask API Routes ******************************* #
+
+# Test if encrypted API_Key provided is matched to uncrypted version of API_Key
+
+class testing(Resource):
+
     @jwt_required()
-    def post(self):
+    def get(self):
         return '%s' % current_identity
+
+    def post(self):
+        return make_response("Connection Test Successful", 200)
+
+# ******************************************************************** #        
 
 class Analyze(Resource):
 
+    @jwt_required()
     def post(self):
 
-        json_ID_LIST = []
+        
         spreadsheet_ID_LIST = []
         image_ID_LIST = []
+        user_id = ''
         request_DATA = request.json
+
 
         if type(request_DATA) is not None:
 
             for data_items in request_DATA.values():
-                 json_ID_LIST.append(data_items['json_ID'])
                  spreadsheet_ID_LIST.append(data_items['spreadsheet_ID'])
                  image_ID_LIST.append(data_items['image_ID'])
-                  
-            start_FETCHING_PROTOCOL(json_ID_LIST, image_ID_LIST)
-            extractor.start_EXTRACTION()
-            start_aggregation_PROTOCOL(extractor.get_resultant(), request_DATA)
-            start_migration_PROTOCOL()
+                 user_id = data_items['User_ID']
 
-            return make_response(jsonify(task_report_PROTOCOL(request_DATA)),200)
+        json_ID_LIST = create_DOCUMENT_LIST_PROTOCOL(user_id)
+        start_FETCHING_PROTOCOL(json_ID_LIST, image_ID_LIST)
+        extractor.start_EXTRACTION()
+        start_aggregation_PROTOCOL(extractor.get_resultant(), request_DATA)
+        start_migration_PROTOCOL()
+
+        return make_response(jsonify(task_report_PROTOCOL(request_DATA)),200)
            
             
-api.add_resource(Protected, '/protect')
+api.add_resource(testing, '/testing')
 api.add_resource(Analyze, '/process_images')
 
 if __name__ == "__main__":
-    app.run(debug=True, host='localhost', port=8080)
+    app.run(debug=True, host='192.168.0.11', port=8080)

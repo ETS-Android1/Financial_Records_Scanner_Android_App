@@ -1,6 +1,5 @@
 package com.example.btr490project;
 
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -17,15 +16,12 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.security.Key;
 import java.util.ArrayList;
@@ -42,14 +38,12 @@ public class FileFragment extends Fragment {
     private List<FileUpload> mUploads;
     private ProgressBar mProgressBar;
     private ArrayList<String> keysArray;
-    private FirebaseStorage mStorage;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_file, container, false);
-
     }
 
     @Override
@@ -60,7 +54,6 @@ public class FileFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.recycler_view_file);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mStorage = FirebaseStorage.getInstance();
 
         keysArray = new ArrayList<>();
         mUploads = new ArrayList<>();
@@ -75,26 +68,9 @@ public class FileFragment extends Fragment {
                 mUploads.clear();
 
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    final FileUpload upload = postSnapshot.getValue(FileUpload.class);
+                    FileUpload upload = postSnapshot.getValue(FileUpload.class);
                     // setting file ids when we getting them from fire base
                     upload.setFileKey(postSnapshot.getKey());
-
-                    if (!upload.getFileUrl().equals("URL not associated")) {
-                        mStorage.getReference().child("documents/" + upload.getFileName() + ".json")
-                                .getDownloadUrl()
-                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        upload.setFileUrl(uri.toString());
-                                    }
-
-                                }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
-                                // Handle any errors
-                            }
-                        });
-                    }
 
                     mUploads.add(upload);
                 }

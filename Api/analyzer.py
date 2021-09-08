@@ -1,4 +1,5 @@
 
+import io
 import os
 import re
 import cv2
@@ -9,7 +10,13 @@ import numpy as np
 import concurrent.futures
 from pytesseract import Output
 from googlemaps import Client as client
+from google.cloud import vision
 from PIL import Image
+
+######### Google Cloud Credentilas #########
+
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'/home/shervintafreshi/Desktop/BTS_630/capstone_project/receipt_OCR/authentication/firebase-adminsdk-creds.json'
+
 
 ######### Required Image processing Functions ##############
 
@@ -82,10 +89,10 @@ def deskew(image):
 def match_template(image, template):
     return cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED) 
 
-############## Image Conversions ##############
+############## Image Conversion Assistant Class ##############
 
 class Extractor():
-
+  
   __API_KEY = 'AIzaSyDSN-u7kK05H45CZLTnl6h9vFnCy9EMxnw' 
   __JSON_PATH = './json_documents'
   __IMAGE_PATH = './test_images' 
@@ -114,6 +121,8 @@ class Extractor():
         #extracton_STATUS_LIST = executor.map(Extractor.__extraction_ROUTINE, img_ID_LIST)
      
   def __extraction_ROUTINE(img_ID):
+
+    # Run Tesseract OCR Data Extraction Method  
     i = 10
     while True:
        Extractor.__OCR_ROUTINE_DEFAULT(img_ID, 100 + i)
@@ -123,7 +132,13 @@ class Extractor():
        elif i < 20:
             i += 10
        elif i == 20:
-            break  
+            break
+
+    # Run GCP Cloud Vision Data Extraction Method
+    Extractor.__OCR_ROUTINE_GCP_VISION(img_ID)
+    if Extractor.__extract_DATA_GCP(img_ID) is not False:
+        return None
+
     Extractor.__data_DICT[img_ID[:-4]] = None            
       
   def __extract_DATA(img_test_ID):
@@ -140,6 +155,7 @@ class Extractor():
      text_data = open(data_path, 'r')
      data_lines = text_data.readlines()  
      
+
      for line in data_lines: 
 
         # Extract Receipt Cost
@@ -201,7 +217,133 @@ class Extractor():
              tax_amount_LC,
              total_cost_LC,
             ]
-         return True     
+         return True
+
+  def __extract_DATA_GCP(img_test_ID):
+
+     total_cost_LC = None
+     tax_amount_LC = None
+     purchase_date_LC = None
+     business_name_LC = None
+     category_LC = None
+     query_info_LC = []
+     
+     data_path = "./extraction_data/cloud-vision-output.txt" 
+
+     text_data = open(data_path, 'r')
+     data_lines = text_data.readlines()  
+     
+
+     Line_Number = 0
+     Line_Data = []
+
+     #Store each line into Array List
+     for line in data_lines:
+        Line_Data.append(line)
+
+
+     for line in data_lines:
+
+        #Extract Receipt Cost
+        match_Total = re.search(r'Total', line) or re.search(r'TOTAL', line) or re.search(r'Sub w/Tax:', line) or re.search(r'Total:', line)
+        if (match_Total != None and total_cost_LC == None and len(line.split()) >= 1):
+
+               
+            for word in line.split():            
+                if (line.split()[0] == 'Sub' and line.split()[1] == 'Total:'):
+                   break
+                if (line.split()[0] == 'Total' and line.split()[1] == 'Tax:'):
+                   break
+                 
+                if ( Extractor.__is_number(Line_Data[Line_Number - 1][1:]) and Extractor.__is_number(Line_Data[Line_Number + 1][1:]) ):
+                   total_cost_LC = float(Line_Data[Line_Number + 1][1:])
+                   break
+
+        #Extract Tax Amount
+        match_Tax = re.search(r'Tax', line) or re.search(r'TAX', line) or re.search(r'Tax::', line) or re.search(r'Total Tax:', line)
+        if (match_Tax != None and tax_amount_LC == None and len(line.split()) >= 1):
+
+
+            for word in line.split():
+
+                Found_Number = False
+                i = 1
+
+                while(Found_Number is not True):
+                    if (Extractor.__is_number(Line_Data[Line_Number - i][1:])):
+                        tax_amount_LC = float(Line_Data[Line_Number + i][1:])
+                        break
+                    else:
+                        i += 1    
+                
+                if (word.startswith('$') and Extractor.__is_number(word[1:])):
+                   tax_amount_LC = float(word[1:])
+                   break
+                elif Extractor.__is_number(word):
+                   tax_amount_LC = float(word)
+                   break            
+        
+         
+        #Extract Business Phone Number
+        Match_Phone = re.search(r'\b\d{3}-\d{3}-\d{4}\b', line) or re.search(r'^[0-9]{3}[ ][0-9]{3}[ ][0-9]{4}$', line) or re.search(r'[(]\d{3}[)][ ]\d{3}-\d{4}', line)
+        if (Match_Phone != None and query_info_LC == []):  
+
+
+            for word in line.split():
+                if (re.match(r'\b\d{3}-\d{3}-\d{4}\b', word)):
+                   query_info_LC = Extractor.__query_INFO(word)[:]
+            if (query_info_LC == []):
+                match_obj =  re.search(r'[(]\d{3}[)][ ]\d{3}[-]\d{4}', line)
+                if match_obj == None:
+                    match_obj = re.search(r'^[0-9]{3}[ ][0-9]{3}[ ][0-9]{4}$', line)
+                    
+                
+                phone_number = match_obj.group(0)
+                query_info_LC = Extractor.__query_INFO(phone_number)[:]
+
+        #Extract Date of Purchase
+        match_Date = re.search(r'\b(1[0-2]|0[1-9])-(3[01]|[12][0-9]|0[1-9])-[0-9]{4}\b', line) or re.search(r'\b(1[0-2]|0[1-9]|[1-9])[/-](3[01]|[12][0-9]|0[1-9])[/-][0-9]{2}\b', line)
+        if (match_Date != None and purchase_date_LC == None):
+
+            for word in line.split():
+                if (re.match(r'\b(1[0-2]|0[1-9])-(3[01]|[12][0-9]|0[1-9])-[0-9]{4}\b', word)):
+                   purchase_date_LC = word
+            for word in line.split():  
+                if (re.match(r'\b(1[0-2]|0[1-9])[/-](3[01]|[12][0-9]|0[1-9])[/-][0-9]{2}\b', word)):
+                   purchase_date_LC = word
+            for word in line.split():
+                if (re.match(r'\b([1-9])[/-](3[01]|[12][0-9]|0[1-9])[/-][0-9]{2}\b', word)):
+                   purchase_date_LC = word
+                   purchase_date_LC = '0' + purchase_date_LC
+
+            if Extractor.__is_number(purchase_date_LC[0]) != True:
+                purchase_date_LC = purchase_date_LC[-1:]
+            elif Extractor.__is_number(purchase_date_LC[len(purchase_date_LC) - 1]) != True:
+                purchase_date_LC = purchase_date_LC[:-1]    
+
+        Line_Number += 1
+
+     if total_cost_LC == None or tax_amount_LC == None or len(query_info_LC) == 0:
+         return False
+     else:
+         if (purchase_date_LC == None):
+              purchase_date_LC = '00/00/0000'
+         elif (len(purchase_date_LC) == 8):
+              purchase_date_LC = purchase_date_LC[:6] + '20' + purchase_date_LC[6:]           
+         
+         business_name_LC = query_info_LC[0]
+         category_LC = query_info_LC[1]
+
+         Extractor.__data_DICT[img_test_ID[:-4]] = [
+             purchase_date_LC, 
+             business_name_LC,
+             category_LC,
+             tax_amount_LC,
+             total_cost_LC,
+            ]
+         return True
+
+
 
   def __query_INFO(search_parameter):
     
@@ -219,7 +361,7 @@ class Extractor():
 
      TEST_IMG_PATH =  './test_images/' + img_ID[:-4] + "_TM.jpg"
          
-     # Modify DPI 
+     # Modify DPI
      receiptIMG = Image.open( './test_images/' + img_ID)
      receiptIMG.save(TEST_IMG_PATH, dpi = (300,300))
      img_modified = cv2.imread(TEST_IMG_PATH)
@@ -245,6 +387,34 @@ class Extractor():
      data_file = open("./extraction_data/" + img_ID + "_RTD.txt", "w")
      n = data_file.write(data)
      data_file.close()
+
+  def __OCR_ROUTINE_GCP_VISION(img_ID):
+
+    #instantiates a client
+    client = vision.ImageAnnotatorClient()
+
+    #Create txt file object
+    text_file = open("./extraction_data/cloud-vision-output.txt", "w")
+
+    #The name of the image file to annotate
+    FILE_NAME = os.path.abspath('./test_images/' + img_ID[:-4] + '.jpg')
+
+    #Loads the image into memory
+    with io.open(FILE_NAME, 'rb') as image_file:
+        content = image_file.read()
+
+    image = vision.Image(content=content)
+
+    #performs label detection on the image file
+    response = client.text_detection(image=image)
+    texts = response.text_annotations
+
+    #write to text file
+    for text in texts:
+        text_file.write('{}'.format(text.description))
+        break
+
+
      
 
 

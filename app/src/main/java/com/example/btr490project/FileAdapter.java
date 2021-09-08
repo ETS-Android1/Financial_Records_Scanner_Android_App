@@ -158,17 +158,50 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                                         Toast.makeText(mContext, "File is empty", Toast.LENGTH_SHORT)
                                                 .show();
                                     } else {
-                                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                        shareIntent.setType("application/*");
-                                        shareIntent.putExtra(Intent.EXTRA_TEXT, uploadCurrent.getFileUrl());
-                                        mContext.startActivity(Intent.createChooser(shareIntent, "Share link using"));
+
+                                        mStorage.getReference().child("documents/" + uploadCurrent
+                                                .getFileName() + ".json").getDownloadUrl()
+                                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                    @Override
+                                                    public void onSuccess(Uri uri) {
+                                                        // Got the download URL for 'users/me/profile.png'
+                                                        Toast.makeText(mContext, uri
+                                                                .toString(), Toast.LENGTH_SHORT)
+                                                                .show();
+                                                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                                        shareIntent.setType("application/*");
+                                                        shareIntent.putExtra(Intent.EXTRA_TEXT, uri
+                                                                .toString());
+                                                        mContext.startActivity(Intent.createChooser(shareIntent, "Share link using"));
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception exception) {
+                                                // Handle any errors
+                                            }
+                                        });
+
                                     }
                                 }
                                 break;
                             case R.id.file_view:
+                                mStorage.getReference()
+                                        .child("documents/" + uploadCurrent.getFileName() + ".json")
+                                        .getDownloadUrl()
+                                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                            @Override
+                                            public void onSuccess(Uri uri) {
 
-                                fileViewDialog(uploadCurrent.getFileUrl());
+                                                fileViewDialog(uri);
 
+                                            }
+
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        // Handle any errors
+                                    }
+                                });
                                 break;
                         }
                         return false;
@@ -180,8 +213,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         });
     }
 
-    private void fileViewDialog(String url) {
-
+    private void fileViewDialog(Uri uri) {
         LayoutInflater layoutInflater = (LayoutInflater) mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.file_view_dialog, null);
@@ -191,6 +223,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
         final TextView fileViewer = (TextView) view.findViewById(R.id.file_view_content);
         requestQueue = Volley.newRequestQueue(mContext);
+        String url = uri.toString();
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
