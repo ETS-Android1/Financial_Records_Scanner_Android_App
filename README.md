@@ -1,4 +1,4 @@
-# Group_12
+# Financial Records Scanner Android App
 
 ## Members
 
